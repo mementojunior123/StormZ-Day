@@ -1,0 +1,22 @@
+Game link: https://mementojunior123.itch.io/stormz-day
+
+Basic outline:
+-You have to fend off waves of zombies (the storm)
+-Every few waves, you change area
+-There is perma-upgrades you can buy with currency.
+-Before each run, you have a perma-upgrade segment. (the calm)
+
+Priority list:
+---High---
+-Add tootips
+-Add some sort of auto-aim or aiming with WASD.
+-Implement saving between sessions.
+---Medium---
+-Find more assets for backgrounds, the player, zombies and bullets.
+-Add more sounds and music.
+-Add visuals for the weapons.
+-Mobile support.
+---Low---
+-Implement settings.
+
+
