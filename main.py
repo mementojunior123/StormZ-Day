@@ -87,8 +87,8 @@ def detect_game_over(event : pygame.Event):
         if event.key == pygame.K_ESCAPE:
             if core.game.wave_count == 1: core.game.wave_count = 0
             end_game(None)
-        elif event.key == pygame.K_F1:
-            pygame.image.save_extended(core.main_display, 'assets/screenshots/game_capture2.png', '.png')
+        #elif event.key == pygame.K_F1:
+            #pygame.image.save_extended(core.main_display, 'assets/screenshots/game_capture2.png', '.png')
     
 
 def end_game(event : pygame.Event = None):
@@ -97,7 +97,7 @@ def end_game(event : pygame.Event = None):
         victory = event.victory
     else:
         victory = False
-    tokens_gained = (core.game.wave_count * 5)  + (core.game.score // 12) + 10
+    tokens_gained = ((core.game.wave_count * 5)  + (core.game.score // 12) + 10) if (core.game.wave_count > 0) and (core.game.score > 0) else 0
     core.storage.upgrade_tokens += tokens_gained
     core.menu.prepare_entry(4)
     core.menu.enter_stage4(core.game.score, core.game.wave_count, tokens_gained, victory)

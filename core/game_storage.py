@@ -13,6 +13,8 @@ class GameStorage:
         self.damage_level : int = 0
         self.vitality_level : int = 0
 
+        self.general_upgrades : dict[str, int] = {'Firerate' : 0, 'Damage' : 0, 'Vitality' : 0}
+
         self.owned_weapons : list[str] = ['Pistol']
         self.weapon_equipped : str = 'Pistol'
         self.ALL_WEAPONS : list[str] = ['Pistol', 'Rifle', 'Shotgun', 'Piercer']
@@ -26,7 +28,8 @@ class GameStorage:
         'Damage' : [0, 5, 10, 20, 40, 50], 
         'Vitality' : [0, 5, 10, 20, 40, 50], 
         'Weapons' : {'Pistol' : 0, 'Rifle' : 50, 'Shotgun' : 50, 'Piercer' : 100},
-        'Armors' : {'Light' : 30, 'Balanced' : 50, 'Heavy' : 80, 'Adaptative' : 100}
+        'Armors' : {'Light' : 30, 'Balanced' : 50, 'Heavy' : 80, 'Adaptative' : 100},
+        'General Upgrades' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50], 'Vitality' : [0, 5, 10, 20, 40, 50],}
         }                                          
     
     def load_from_file(self, file_path : str = 'assets/data/game_info.json'):

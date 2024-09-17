@@ -21,7 +21,7 @@ class UiSprite:
     TAG_EVENT = pygame.event.custom_type()
     def __init__(self, surf : pygame.Surface, rect : pygame.Rect, tag : int, name : str|None = None, keep_og_surf = False, 
                  attributes : dict = None, data : dict = None, forced_og_surf : pygame.Surface = None, zindex : int = 0,
-                 colorkey : ColorType|str|None = None):
+                 colorkey : ColorType|None = None):
         self.surf : pygame.Surface = surf
         if colorkey and (surf is not None):
             self.surf.set_colorkey(colorkey)
@@ -69,6 +69,9 @@ class UiSprite:
         self._pivot : Pivot2D = Pivot2D(self.position)
         self._pivot_origin : pygame.Vector2
         self._pivot_offset : pygame.Vector2
+    
+    def update(self, delta : float):
+        pass
     
     def __getitem__(self, index):
         if index == 0: return self.surf

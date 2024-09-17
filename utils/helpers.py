@@ -31,7 +31,8 @@ def to_roman(num : int) -> str:
 
     return "".join([a for a in roman_num(num)])
 
-ColorType = Union[list[int], tuple[int, int, int], pygame.Color]
+ColorType = Union[list[int], tuple[int, int, int], pygame.Color, str]
+RectType = Union[list[int], tuple[int, int, int, int], pygame.Rect]
 
 class Task:
     def __init__(self, callback : Callable, *args, **kwargs) -> None:
@@ -129,14 +130,14 @@ def reset_upgrade_bar(surf : pygame.Surface, count : int = 5, width : int = 100,
     for index in range(count):
         pygame.draw.rect(surf, bg_color, (border, (length + border) * index + border, width, length))
 
-def make_right_arrow(height : int, width : int, color : ColorType|str = (255, 0, 0), colorkey : ColorType|str = (0, 255, 0)) -> pygame.Surface:
+def make_right_arrow(height : int, width : int, color : ColorType = (255, 0, 0), colorkey : ColorType = (0, 255, 0)) -> pygame.Surface:
     surface = pygame.surface.Surface((width, height))
     surface.set_colorkey(colorkey)
     surface.fill(colorkey)
     pygame.draw.polygon(surface, color, [(0,0), (width, height // 2), (0, height)])
     return surface
 
-def make_circle(radius : int, color : ColorType|str, colorkey : ColorType|str = (0, 255, 0)) -> pygame.Surface:
+def make_circle(radius : int, color : ColorType, colorkey : ColorType = (0, 255, 0)) -> pygame.Surface:
     d = radius * 2
     surface : pygame.Surface = pygame.Surface((d, d))
     surface.set_colorkey(colorkey)
@@ -145,7 +146,7 @@ def make_circle(radius : int, color : ColorType|str, colorkey : ColorType|str = 
     return surface
 
 
-def load_alpha_to_colorkey(path : str, colorkey : ColorType|str):
+def load_alpha_to_colorkey(path : str, colorkey : ColorType):
     image = pygame.image.load(path).convert_alpha()
     new_surf = pygame.surface.Surface(image.get_size())
     new_surf.set_colorkey(colorkey)

@@ -1,13 +1,13 @@
 import pygame
 from math import floor
 from utils.ui.ui_sprite import UiSprite
-from utils.helpers import rotate_around_pivot_accurate
+from utils.helpers import rotate_around_pivot_accurate, ColorType
 class TextSprite(UiSprite):
     main_font = pygame.font.Font(r'assets/fonts/Pixeltype.ttf', 40)
     def __init__(self, position : pygame.Vector2|tuple, rect_alignment : str|None, tag: int, text : str, name: str | None = None, attributes: dict = None, 
                  data: dict = None, zindex: int = 0, text_settings : tuple[pygame.Font, pygame.Color, bool]|None = None, 
                  text_stroke_settings : tuple[pygame.Color, int]|None = None, text_alingment : tuple[int, int]|None = None,       
-                 colorkey : pygame.Color|tuple[int, int, int]|None = None):
+                 colorkey : ColorType|None = None):
         '''Text alignment is a tuple of (max_line_lentgh, newline_height). newline_height does nothing for now'''
         super().__init__(None, None, tag, name, False, attributes, data, None, zindex)
         self.text_settings : tuple[pygame.Font, pygame.Color, bool] = text_settings or (TextSprite.main_font, 'Black', False)
