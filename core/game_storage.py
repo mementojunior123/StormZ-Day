@@ -30,7 +30,7 @@ class GameStorage:
         'Weapons' : {'Pistol' : 0, 'Rifle' : 50, 'Shotgun' : 50, 'Piercer' : 100},
         'Armors' : {'Light' : 30, 'Balanced' : 50, 'Heavy' : 80, 'Adaptative' : 100},
         'General Upgrades' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50], 'Vitality' : [0, 5, 10, 20, 40, 50],}
-        }                                          
+        }
     
     def load_from_file(self, file_path : str = 'assets/data/game_info.json'):
         pass

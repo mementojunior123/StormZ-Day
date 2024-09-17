@@ -54,7 +54,7 @@ for _ in range(90):
     QuickZombie()
     TankZombie()
     RangedZombie()
-core.settings.set_defualt({'Brightness' : 0})
+core.settings.set_defualt({'Brightness' : 0, "ControlMethod" : None})
 core.settings.load()
 
 core.set_brightness(core.settings.info['Brightness'])
@@ -123,7 +123,12 @@ def end_game(event : pygame.Event = None):
 if core.IS_DEBUG: core.storage.upgrade_tokens = 999
 core.game.active = False
 core.menu.add_connections()
-core.menu.update_highscores_stage1()
+
+if core.settings.info['ControlMethod']:
+    core.menu.enter_stage1()
+else:
+    core.menu.stage = 7
+    
 core.event_manager.bind(core.START_GAME, start_game)
 core.event_manager.bind(core.END_GAME, end_game)
 core.bg_manager.play(core.menu.main_theme, 1)

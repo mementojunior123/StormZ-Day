@@ -53,6 +53,9 @@ class Player(Sprite):
         self.weapon : BaseWeapon
         self.armor : BaseArmor|None
 
+        self.current_direction : pygame.Vector2
+        self.last_shot_direction : pygame.Vector2
+
         self.dynamic_mask = True
         Player.inactive_elements.append(self)
 
@@ -63,6 +66,9 @@ class Player(Sprite):
 
         element.image = cls.test_image
         element.rect = element.image.get_rect()
+
+        element.current_direction = pygame.Vector2(0,0)
+        element.last_shot_direction = pygame.Vector2(1,0)
 
         element.position = new_pos
         element.align_rect()
@@ -104,22 +110,16 @@ class Player(Sprite):
     
     def update(self, delta: float):
         if not core_object.game.is_nm_state(): return
+        self.current_direction = self.get_movement_vector()
         self.input_action()
         self.do_movement(delta)
         self.do_collisions()
         if self.armor: self.armor.update(delta)
         self.update_healthbars()
     
-    def input_action(self):
-        if (pygame.key.get_pressed())[pygame.K_SPACE] or (pygame.mouse.get_pressed()[0] and core_object.game.game_timer.get_time() > 0.3): 
-            if self.weapon.stats.fire_mode == FiringModes.auto:
-                self.shoot()
-    
-    def do_movement(self, delta : float):
+    def get_movement_vector(self) -> pygame.Vector2:
         keyboard_map = pygame.key.get_pressed()
         move_vector : pygame.Vector2 = pygame.Vector2(0,0)
-        speed : float = 7.0
-        if self.armor: speed *= self.armor.speed_pen
         if keyboard_map[pygame.K_a]:
             move_vector += pygame.Vector2(-1, 0)
         if keyboard_map[pygame.K_d]:
@@ -129,7 +129,19 @@ class Player(Sprite):
         if keyboard_map[pygame.K_w]:
             move_vector += pygame.Vector2(0, -1)
         if move_vector.magnitude() != 0: move_vector.normalize_ip()
-        self.position += move_vector * speed * delta
+        return move_vector
+    
+    def input_action(self):
+        if not self.weapon.stats.fire_mode == FiringModes.auto: return
+        if (pygame.mouse.get_pressed()[0] and core_object.game.game_timer.get_time() > 0.3): 
+            self.shoot('Mouse')
+        elif (pygame.key.get_pressed())[pygame.K_SPACE]:
+            self.shoot('Space')
+
+    def do_movement(self, delta : float):
+        speed : float = 7.0
+        if self.armor: speed *= self.armor.speed_pen
+        self.position += self.current_direction * speed * delta
         self.clamp_rect(pygame.Rect(0,0, *core_object.main_display.get_size()))
     
     def do_collisions(self):
@@ -165,15 +177,36 @@ class Player(Sprite):
         core_object.bg_manager.play_sfx(self.hit_sound, 1)
         self.update_healthbars()
     
-    def shoot(self):
+    def shoot(self, input_method : str):
+        control_scheme : str = core_object.settings.info['ControlMethod']
+        mouse_direction : pygame.Vector2 = (pygame.Vector2(pygame.mouse.get_pos()) - self.position).normalize()
+        key_direction : pygame.Vector2 = self.last_shot_direction.copy()
+        shot_direction : pygame.Vector2
+        if control_scheme == 'Expert':
+            shot_direction = mouse_direction
 
-        player_to_mouse_vector = pygame.Vector2(pygame.mouse.get_pos()) - self.position
-        shot_direction = player_to_mouse_vector.normalize()
+        elif control_scheme == 'Mixed':
+            shot_direction = mouse_direction if input_method == 'Mouse' else key_direction
+
+        elif control_scheme == 'Simple':
+            if input_method == 'Mouse': shot_direction = mouse_direction
+            else:
+                if not BaseZombie.active_elements:
+                    shot_direction = key_direction 
+                else: 
+                    sorted_enemies = sorted(BaseZombie.active_elements, key=lambda element : (element.position - self.position).magnitude_squared())
+                    closest_enemy : BaseZombie = sorted_enemies[0]
+                    shot_direction = (closest_enemy.position - self.position).normalize()
+
+        elif control_scheme == 'Mobile':
+            pass
+        
         shot_origin = self.position
         if type(self.weapon) is BaseWeapon or type(self.weapon) is ShotgunWeapon or type(self.weapon) is PeirceWeapon:
             result = self.weapon.shoot(shot_origin, shot_direction)
             if result:
                 core_object.bg_manager.play_sfx(self.shot_sfx if self.weapon.stats.firerate >= 0.14 else self.fast_shot_sfx, 1)
+                self.last_shot_direction = shot_direction.copy()
 
     
     def update_healthbar(self):
@@ -200,13 +233,13 @@ class Player(Sprite):
         if event.type != pygame.KEYDOWN: return
         if not core_object.game.is_nm_state(): return
         if event.key == pygame.K_SPACE:
-            self.shoot()
+            self.shoot('Space')
     
     def handle_mouse_event(self, event : pygame.Event):
         if event.type != pygame.MOUSEBUTTONDOWN: return
         if not core_object.game.is_nm_state(): return
         if event.button == 1:
-            self.shoot()
+            self.shoot('Mouse')
 
     @classmethod
     def receive_key_event(cls, event : pygame.Event):
@@ -219,12 +252,11 @@ class Player(Sprite):
             element.handle_mouse_event(event)
     
     def clean_instance(self):
-        self.image = None
-        self.rect = None
-        self.pivot = None
-        self._position = pygame.Vector2(0,0)
-        self.zindex = None
+        super().clean_instance()
 
+        self.current_direction = None
+        self.last_shot_direction = None
+        
         self.hp = None
         self.max_hp = None
         self.shot_cooldown = None

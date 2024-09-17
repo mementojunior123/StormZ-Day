@@ -196,7 +196,8 @@ class Menu(BaseMenu):
     def init(self):
         self.bg_color = (94, 129, 162)
         self.stage = 1
-        self.stage_data : list[dict] = [None, {}, {}, {}, {}, {}]
+        self.stage_data : list[dict] = [{} for _ in range(7 + 1)]
+        self.stage_data[0] = None
         window_size = core_object.main_display.get_size()
         centerx = window_size[0] // 2
         upgrade_bar_surf1 = make_upgrade_bar()
@@ -275,6 +276,16 @@ class Menu(BaseMenu):
 '''Completely negates all damage while active, but falls apart
 very quickly if you get overwhelmed.
 Useful for skilled players.''')],
+        #stage 5 --> stage 6
+        [],
+        #stage 6 --> stage 7
+        [
+        BaseUiElements.new_text_sprite('Choose control scheme', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        *self.make_control_scheme_ui('Mobile', (100, 200), 'Use this if you are playing on mobile.'),
+        *self.make_control_scheme_ui('Simple', (345, 200), 'Shots will automatically go to the nearest enemy.'),
+        *self.make_control_scheme_ui('Mixed', (590, 200), 'Aim by moving when using SPACE to shoot.\nAim using the mouse when clicking to shoot.'), 
+        *self.make_control_scheme_ui('Expert', (835, 200), 'Aim with the mouse.\nRecommended for more experienced players.')
+        ]
         ]
         #self.get_sprite_by_name(2, 'token_count').rect.topright = (900, 15)
     
@@ -384,6 +395,13 @@ Useful for skilled players.''')],
                                                         (0.4, 1),name=f'armor_interact_{armor_name}')
         self.find_and_replace(new_armor_interact, self.stage, name=f'armor_interact_{armor_name}')
     
+    def make_control_scheme_ui(self, name : str, midtop : pygame.Vector2|tuple[int, int], tooltip : str ) -> tuple[UiSprite, UiSprite]:
+        button = BaseUiElements.new_button('BlueButton', name, 1, 'midtop', midtop, (0.4, 1.0), 
+        {'name' : f'button_{name}'}, (Menu.font_40, 'Black', False))
+        tooltip = ToolTip(pygame.Vector2(15, 440), 'bottomleft', 0, tooltip, button.rect, f'tooltip_{name}',
+                          text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
+        return button, tooltip
+    
     def exit_stage2(self):
         pass
 
@@ -421,6 +439,10 @@ Useful for skilled players.''')],
             info1 = TInfo(interpolation.linear, time)
             TweenModule.new_tween(overlay, info1, goal1)
             self.add_temp(overlay, time + 0.01)
+    
+    def exit_stage7(self):
+        self.stage = self.stage_data[7].get('prev_stage', 1)
+        self.stage_data[7].clear()
     
     def update(self, delta : float):
         super().update(delta)
@@ -525,3 +547,9 @@ Useful for skilled players.''')],
                     for armor in core_object.storage.ALL_ARMORS:
                         self.update_armor_ui_stage5(armor)
                     self.update_token_count(self.stage)
+                
+            case 7:
+                if name[:7] == 'button_':
+                    scheme_name = name[7:]
+                    core_object.settings.info['ControlMethod'] = scheme_name
+                    self.enter_stage1()
