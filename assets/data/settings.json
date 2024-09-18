@@ -1,1 +1,4 @@
-{"Brightness": 0, "ControlMethod": "Simple"}
+{
+    "Brightness" : 0, 
+    "ControlMethod" : "Mixed"
+}

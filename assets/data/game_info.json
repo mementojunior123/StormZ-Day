@@ -1,3 +1,17 @@
 {
-    
+    "armor_equipped" : null, 
+    "owned_armors" : [], 
+    "weapon_equipped" : "Pistol", 
+    "owned_weapons" : [
+        "Pistol"
+    ], 
+    "highscore" : 0, 
+    "highest_wave" : 1, 
+    "tokens" : 20, 
+    "general_upgrades" : {
+        "Firerate" : 0, 
+        "Damage" : 0, 
+        "Vitality" : 0
+    }, 
+    "isvalid" : true
 }

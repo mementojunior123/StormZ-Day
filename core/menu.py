@@ -476,6 +476,7 @@ Useful for skilled players.''')],
                             self.alert_player('Not enough tokens!')
                     else:
                         self.alert_player('This stat is already maxed!')
+                    core_object.save_storage()
     
                 elif name == 'ready_button':
                     self.launch_game()
@@ -513,6 +514,7 @@ Useful for skilled players.''')],
                     for weapon in core_object.storage.ALL_WEAPONS:
                         self.update_weapon_ui_stage3(weapon)
                     self.update_token_count(self.stage)
+                    core_object.save_storage()
 
             case 4:
                 if name == 'next_button':
@@ -547,9 +549,11 @@ Useful for skilled players.''')],
                     for armor in core_object.storage.ALL_ARMORS:
                         self.update_armor_ui_stage5(armor)
                     self.update_token_count(self.stage)
+                    core_object.save_storage()
                 
             case 7:
                 if name[:7] == 'button_':
                     scheme_name = name[7:]
                     core_object.settings.info['ControlMethod'] = scheme_name
+                    core_object.save_settings()
                     self.enter_stage1()

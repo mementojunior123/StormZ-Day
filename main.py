@@ -54,10 +54,11 @@ for _ in range(90):
     QuickZombie()
     TankZombie()
     RangedZombie()
-core.settings.set_defualt({'Brightness' : 0, "ControlMethod" : None})
-core.settings.load()
 
-core.set_brightness(core.settings.info['Brightness'])
+
+#core.storage.reset()
+
+
 
 core.menu.init()
 core.game.init()
@@ -119,15 +120,14 @@ def end_game(event : pygame.Event = None):
         core_object.bg_manager.play(core_object.menu.fail_theme, 1, loops=1)
     else:
         core_object.bg_manager.play(core.menu.victory_theme, 1, loops=1)
+    
+    core_object.save_storage()
 
-if core.IS_DEBUG: core.storage.upgrade_tokens = 999
+
 core.game.active = False
 core.menu.add_connections()
 
-if core.settings.info['ControlMethod']:
-    core.menu.enter_stage1()
-else:
-    core.menu.stage = 7
+
     
 core.event_manager.bind(core.START_GAME, start_game)
 core.event_manager.bind(core.END_GAME, end_game)
@@ -150,6 +150,13 @@ cycle_timer = Timer(0.1, core_object.global_timer.get_time)
 setup_debug_sprites()
 
 async def main():
+    core.load_game()
+    if core.settings.info['ControlMethod']:
+        core.menu.enter_stage1()
+    else:
+        core.menu.stage = 7
+    if core.IS_DEBUG: core.storage.upgrade_tokens = 999
+    core.set_brightness(core.settings.info['Brightness'])
     while 1:
         core.update_dt(60)
         for event in pygame.event.get():

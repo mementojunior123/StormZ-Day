@@ -65,15 +65,47 @@ class Core:
         if method == 1:
             platform.window.onfocus = self.continue_things
             platform.window.onblur = self.stop_things
+            platform.window.onbeforeunload = self.save_game
+            platform.window.onclose = self.save_game
         else:
             platform.EventTarget.addEventListener(platform.window, "blur", self.stop_things)
             platform.EventTarget.addEventListener(platform.window, "focus", self.continue_things)
+    
+    def load_game(self):
+        self.settings.set_defualt({'Brightness' : 0, "ControlMethod" : None})
+
+        self.load_settings()
+        self.load_storage()
+    
+    def load_storage(self):
+        if not self.is_web(): self.storage.load_from_file()
+        else: 
+            print(self.storage.load_from_web())
+    
+    def load_settings(self):
+        if not self.is_web(): self.settings.load()
+        else: self.settings.load_web()
+    
+    def save_game(self):
+        self.save_settings()
+        self.save_storage()
+    
+    def save_storage(self):
+        if not self.is_web(): self.storage.save_to_file()
+        else: self.storage.save_to_web()
+    
+    def save_settings(self):
+        if not self.is_web(): self.settings.save()
+        else: self.settings.save_web()
 
     def init(self, main_display : pygame.Surface):
         self.main_display = main_display
     
     def close_game(self, event : pygame.Event):
-        self.settings.save()
+        if not self.is_web(): self.settings.save()
+        else: self.settings.save_web()
+        if not self.is_web(): self.storage.save_to_file()
+        else: self.storage.save_to_web()
         pygame.quit()
         exit()
     
