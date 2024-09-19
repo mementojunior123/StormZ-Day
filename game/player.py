@@ -131,6 +131,23 @@ class Player(Sprite):
         if move_vector.magnitude() != 0: move_vector.normalize_ip()
         return move_vector
     
+    def get_mouse_vector(self) -> pygame.Vector2:
+        return (pygame.Vector2(pygame.mouse.get_pos()) - self.position).normalize()
+    
+    def get_arrow_key_vector(self) -> pygame.Vector2:
+        keyboard_map = pygame.key.get_pressed()
+        move_vector : pygame.Vector2 = pygame.Vector2(0,0)
+        if keyboard_map[pygame.K_LEFT]:
+            move_vector += pygame.Vector2(-1, 0)
+        if keyboard_map[pygame.K_RIGHT]:
+            move_vector += pygame.Vector2(1, 0)
+        if keyboard_map[pygame.K_DOWN]:
+            move_vector += pygame.Vector2(0, 1)
+        if keyboard_map[pygame.K_UP]:
+            move_vector += pygame.Vector2(0, -1)
+        if move_vector.magnitude() != 0: move_vector.normalize_ip()
+        return move_vector
+    
     def input_action(self):
         if not self.weapon.stats.fire_mode == FiringModes.auto: return
         if (pygame.mouse.get_pressed()[0] and core_object.game.game_timer.get_time() > 0.3): 
@@ -181,6 +198,7 @@ class Player(Sprite):
         control_scheme : str = core_object.settings.info['ControlMethod']
         mouse_direction : pygame.Vector2 = (pygame.Vector2(pygame.mouse.get_pos()) - self.position).normalize()
         key_direction : pygame.Vector2 = self.last_shot_direction.copy()
+        arrow_direction : pygame.Vector2 = self.get_arrow_key_vector()
         shot_direction : pygame.Vector2
         if control_scheme == 'Expert':
             shot_direction = mouse_direction
@@ -191,7 +209,9 @@ class Player(Sprite):
         elif control_scheme == 'Simple':
             if input_method == 'Mouse': shot_direction = mouse_direction
             else:
-                if not BaseZombie.active_elements:
+                if arrow_direction.magnitude() != 0:
+                    shot_direction = arrow_direction
+                elif not BaseZombie.active_elements:
                     shot_direction = key_direction 
                 else: 
                     sorted_enemies = sorted(BaseZombie.active_elements, key=lambda element : (element.position - self.position).magnitude_squared())

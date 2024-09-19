@@ -52,6 +52,7 @@ class GameStorage:
         self.high_wave = data['highest_wave']
         self.upgrade_tokens = data['tokens']
         self.general_upgrades = data['general_upgrades']
+        data['general_upgrades']
         return True
 
     def _get_save_data(self) -> dict:
@@ -82,14 +83,15 @@ class GameStorage:
             json.dump(data, file, indent=4, separators=(', ', ' : '))
 
     def load_from_web(self):
+
         for index in range(window.localStorage.length):
             key = window.localStorage.key(index)
-            value = self.get_web(key)
-            print(f'{key} : {value}')
-        json_string : str = self.get_web('GameData')
-        print(json_string)
+            value = window.localStorage.getItem(key)
+            f'{key} : {value}'
+
+        json_string : str = window.localStorage.getItem('GameData')
         if not json_string:
-            self.set_web('GameData', r'{}')
+            window.localStorage.setItem('GameData', r'{}')
             return self.load_from_file()
         data : dict = json.loads(json_string)
         result = self._load_data(data)
@@ -97,15 +99,4 @@ class GameStorage:
 
     def save_to_web(self):
         str_result = json.dumps(self._get_save_data()) 
-        self.set_web('GameData', str_result)
-        print(str_result)
-
-    def get_web(self, key : str) -> str:
-        window.localStorage.getItem(key)
-
-    def set_web(self, key : str, value : str):
-        str_value : str = str(value)
-        window.localStorage.setItem(key, value)
-        test = window.localStorage.getItem(key)
-        if test != str_value:
-            print(f'{test} != {str_value}')
+        window.localStorage.setItem('GameData', str_result)

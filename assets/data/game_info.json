@@ -7,11 +7,11 @@
     ], 
     "highscore" : 0, 
     "highest_wave" : 1, 
-    "tokens" : 20, 
+    "tokens" : 5, 
     "general_upgrades" : {
         "Firerate" : 0, 
         "Damage" : 0, 
-        "Vitality" : 0
+        "Vitality" : 2
     }, 
     "isvalid" : true
 }

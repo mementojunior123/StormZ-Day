@@ -53,12 +53,12 @@ class Settings:
     
     def save_web(self):
         str_result = json.dumps(self.info)
-        self.set_web('Settings', str_result)
+        window.localStorage.setItem('Settings', str_result)
     
     def load_web(self):
         if self.default is None:
             raise SettingException('Default was not set')
-        json_string : str = self.get_web('Settings')
+        json_string : str = window.localStorage.getItem('Settings')
         if not json_string: return self.load()
         data : dict = json.loads(json_string)
         for key in self.default:
@@ -69,9 +69,3 @@ class Settings:
         for key in data:
             if key not in self.info:
                 self.info[key] = data[key]
-    
-    def get_web(self, key : str) -> str:
-        window.localStorage.getItem(key)
-
-    def set_web(self, key : str, value : Any):
-        window.localStorage.setItem(key, str(value) if type(value) is not str else value)

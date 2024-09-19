@@ -66,7 +66,6 @@ class Core:
             platform.window.onfocus = self.continue_things
             platform.window.onblur = self.stop_things
             platform.window.onbeforeunload = self.save_game
-            platform.window.onclose = self.save_game
         else:
             platform.EventTarget.addEventListener(platform.window, "blur", self.stop_things)
             platform.EventTarget.addEventListener(platform.window, "focus", self.continue_things)
@@ -80,7 +79,7 @@ class Core:
     def load_storage(self):
         if not self.is_web(): self.storage.load_from_file()
         else: 
-            print(self.storage.load_from_web())
+            self.storage.load_from_web()
     
     def load_settings(self):
         if not self.is_web(): self.settings.load()

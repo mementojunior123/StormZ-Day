@@ -196,7 +196,7 @@ class Menu(BaseMenu):
     def init(self):
         self.bg_color = (94, 129, 162)
         self.stage = 1
-        self.stage_data : list[dict] = [{} for _ in range(7 + 1)]
+        self.stage_data : list[dict] = [{} for _ in range(20 + 1)]
         self.stage_data[0] = None
         window_size = core_object.main_display.get_size()
         centerx = window_size[0] // 2
@@ -205,6 +205,8 @@ class Menu(BaseMenu):
         [BaseUiElements.new_text_sprite('StormZ Day', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         BaseUiElements.new_button('BlueButton', 'Play', 1, 'midbottom', (centerx, window_size[1] - 15), (0.5, 1.4), 
         {'name' : 'play_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Settings', 1, 'bottomleft', (15, window_size[1] - 15), (0.4, 1.0), 
+        {'name' : 'settings_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_text_sprite('Highscore : 0', (Menu.font_50, 'Black', False), 0, 'topleft', (15, 200), name='highscore_text'),
         BaseUiElements.new_text_sprite('Highest wave : 0', (Menu.font_50, 'Black', False), 0, 'topleft', (15, 260), name='highwave_text'),
         BaseUiElements.new_text_sprite('WASD to move', (Menu.font_50, 'Black', False), 0, 'topright', (945, 140)),
@@ -216,11 +218,11 @@ class Menu(BaseMenu):
         [BaseUiElements.new_text_sprite('Upgrades', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
         TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
-        BaseUiElements.new_button('BlueButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+        BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
         {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx, window_size[1] - 25), (0.4, 1.0), 
+        BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx + 100, window_size[1] - 25), (0.4, 1.0), 
         {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
         
         *self.make_general_upgrade_bar('Firerate', pygame.Vector2(180, 110), 'Shoot faster. 20% per stack.'),
@@ -230,7 +232,7 @@ class Menu(BaseMenu):
 
         #stage 2 --> stage 3
         [BaseUiElements.new_text_sprite('Weapons', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-         BaseUiElements.new_button('BlueButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+         BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
         {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
@@ -261,11 +263,11 @@ class Menu(BaseMenu):
         ],
         #stage 4 --> stage 5
         [BaseUiElements.new_text_sprite('Armors', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-         BaseUiElements.new_button('BlueButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+         BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
         {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx, window_size[1] - 25), (0.4, 1.0), 
+        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx - 100, window_size[1] - 25), (0.4, 1.0), 
         {'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
         UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
         TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
@@ -277,7 +279,17 @@ class Menu(BaseMenu):
 very quickly if you get overwhelmed.
 Useful for skilled players.''')],
         #stage 5 --> stage 6
-        [],
+        [
+        BaseUiElements.new_text_sprite('Settings', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_text_sprite('Current control scheme : Simple', (Menu.font_50, 'Black', False), 0, 'topleft', (15, 90), name='scheme_title'),
+        BaseUiElements.new_button('BlueButton', 'Choose', 1, 'topleft', (15, 140), (0.4, 1.0), 
+        {'name' : 'choose_scheme_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_text_sprite('Reset data', (Menu.font_50, 'Black', False), 0, 'topright', (window_size[0] - 15, 90), name='scheme_title'),
+        BaseUiElements.new_button('RedButton', 'Reset', 1, 'topright', (window_size[0] - 15, 140), (0.4, 1.0), 
+        {'name' : 'choose_reset_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'bottomleft', (15, window_size[1] - 15), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        ],
         #stage 6 --> stage 7
         [
         BaseUiElements.new_text_sprite('Choose control scheme', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
@@ -285,9 +297,16 @@ Useful for skilled players.''')],
         *self.make_control_scheme_ui('Simple', (345, 200), 'Shots will automatically go to the nearest enemy.'),
         *self.make_control_scheme_ui('Mixed', (590, 200), 'Aim by moving when using SPACE to shoot.\nAim using the mouse when clicking to shoot.'), 
         *self.make_control_scheme_ui('Expert', (835, 200), 'Aim with the mouse.\nRecommended for more experienced players.')
+        ],
+        #stage 7 --> stage 8
+        [
+        BaseUiElements.new_text_sprite('Are you sure? This action is irreversible.', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'midleft', (200, 200), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('RedButton', 'RESET', 1, 'midright', (740, 200), (0.4, 1.0), 
+        {'name' : 'reset_button'}, (Menu.font_40, 'Black', False)),
         ]
         ]
-        #self.get_sprite_by_name(2, 'token_count').rect.topright = (900, 15)
     
     def enter_stage1(self):
         self.stage = 1
@@ -440,9 +459,50 @@ Useful for skilled players.''')],
             TweenModule.new_tween(overlay, info1, goal1)
             self.add_temp(overlay, time + 0.01)
     
+    def enter_stage6(self):
+        self.stage = 6
+        text_sprite = BaseUiElements.new_text_sprite(f'Current control scheme : {core_object.settings.info['ControlMethod']}', 
+                                                     (Menu.font_50, 'Black', False), 0, 'topleft', (15, 90), name='scheme_title')
+        self.find_and_replace(text_sprite, 6, name='scheme_title')
+    
+    def enter_stage7(self):
+        self.stage_data[7]['prev_stage'] = self.stage
+        self.stage = 7
+    
     def exit_stage7(self):
-        self.stage = self.stage_data[7].get('prev_stage', 1)
+        old_stage : int = self.stage_data[7].get('prev_stage', None)
+        if not old_stage: old_stage = 1
         self.stage_data[7].clear()
+        self.enter_any_stage(old_stage)
+    
+    def enter_stage8(self):
+        self.stage_data[8]['prev_stage'] = self.stage
+        self.stage = 8
+
+    def exit_stage8(self):
+        old_stage : int = self.stage_data[8].get('prev_stage', None)
+        if not old_stage: old_stage = 1
+        self.stage_data[8].clear()
+        self.enter_any_stage(old_stage)
+
+    def enter_any_stage(self, new_stage : int):
+        match new_stage:
+            case 1|7:
+                self.enter_stage1()
+            case 2:
+                self.enter_stage2()
+            case 3:
+                self.enter_stage3()
+            case 4:
+                self.enter_stage4()
+            case 5:
+                self.enter_stage5()
+            case 6:
+                self.enter_stage6()
+            case 8:
+                self.enter_stage8()
+            case _:
+                self.stage = new_stage
     
     def update(self, delta : float):
         super().update(delta)
@@ -461,6 +521,8 @@ Useful for skilled players.''')],
             case 1:
                 if name == "play_button":
                     self.enter_stage2()
+                elif name == "settings_button":
+                    self.enter_stage6()
             case 2:
                 if name[:4] == 'buy_':
                     upg_name = name[4:]
@@ -476,7 +538,6 @@ Useful for skilled players.''')],
                             self.alert_player('Not enough tokens!')
                     else:
                         self.alert_player('This stat is already maxed!')
-                    core_object.save_storage()
     
                 elif name == 'ready_button':
                     self.launch_game()
@@ -514,7 +575,6 @@ Useful for skilled players.''')],
                     for weapon in core_object.storage.ALL_WEAPONS:
                         self.update_weapon_ui_stage3(weapon)
                     self.update_token_count(self.stage)
-                    core_object.save_storage()
 
             case 4:
                 if name == 'next_button':
@@ -549,11 +609,26 @@ Useful for skilled players.''')],
                     for armor in core_object.storage.ALL_ARMORS:
                         self.update_armor_ui_stage5(armor)
                     self.update_token_count(self.stage)
-                    core_object.save_storage()
+            
+            case 6:
+                if name == 'choose_scheme_button':
+                    self.enter_stage7()
+                elif name == 'back_button':
+                    self.enter_stage1()
+                elif name == 'choose_reset_button':
+                    self.enter_stage8()
                 
             case 7:
                 if name[:7] == 'button_':
                     scheme_name = name[7:]
                     core_object.settings.info['ControlMethod'] = scheme_name
                     core_object.save_settings()
-                    self.enter_stage1()
+                    self.exit_stage7()
+
+            case 8:
+                if name == 'back_button':
+                    self.exit_stage8()
+                elif name == 'reset_button':
+                    core_object.storage.reset()
+                    self.exit_stage8()
+                    self.alert_player('Data Reset!')
