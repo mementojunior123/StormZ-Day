@@ -7,7 +7,7 @@ Basic outline:
 
 Priority list:
 ---High---
--Disambiguate between the 'Ready' button and the 'Next' button.
+-Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
 -Add some sort of auto-aim or aiming with WASD to help trackpad players. (In Progress)
 -Implement saving between sessions. (Implmented)
 ---Medium---
