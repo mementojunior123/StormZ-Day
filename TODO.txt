@@ -9,7 +9,7 @@ Priority list:
 ---High---
 -Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
 -Add some sort of auto-aim or aiming with WASD to help trackpad players. (In Progress)
--Implement saving between sessions. (Implmented)
+
 ---Medium---
 -Make the upgrades associated to weapons/armors so that the player actually has stuff to buy.
 -Do more game balancing.
@@ -22,4 +22,5 @@ Priority list:
 -Implement settings. (In Progress)
 
 ---Done---
+-Implement saving between sessions. (Implmented)
 -Add tootips. (Implmented)
