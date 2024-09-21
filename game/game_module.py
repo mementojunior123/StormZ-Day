@@ -115,7 +115,7 @@ class Game:
         self.background = Background.spawn(0)
         self.enemies = BaseZombie.active_elements
         self.show_wave(1)
-        self.score_sprite = TextSprite(pygame.Vector2(5, 535), 'bottomleft', 0, 'Score : 0', 'score_sprite', None, None, 0, 
+        self.score_sprite = TextSprite(pygame.Vector2(5, 5), 'topleft', 0, 'Score : 0', 'score_sprite', None, None, 0, 
                                        (Game.font_40, 'White', False), ('Black', 2), colorkey=[0, 255, 0])
         core_object.main_ui.add(self.score_sprite)
         core_object.bg_manager.stop_all()
@@ -326,6 +326,8 @@ class Game:
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), setattr, self.player, 'position', pygame.Vector2(480, 270))
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.background.switch_area, self.current_area)
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), BaseProjectile.kill_all_instances)
+        core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.player.armor.refill)
+        core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.player.update_armor_healthbar)
         core_object.task_scheduler.schedule_task((fade_time[0] + fade_time[1] + anim_time + 0.01, self.game_timer.get_time, 1), self.transition_to_break, 1)
 
     def fade_in_then_out(self, time : float = 2, wait_time : float = 0.01):

@@ -293,9 +293,9 @@ Useful for skilled players.''')],
         #stage 6 --> stage 7
         [
         BaseUiElements.new_text_sprite('Choose control scheme', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-        *self.make_control_scheme_ui('Mobile', (100, 200), 'Use this if you are playing on mobile.'),
-        *self.make_control_scheme_ui('Simple', (345, 200), 'Shots will automatically go to the nearest enemy.'),
-        *self.make_control_scheme_ui('Mixed', (590, 200), 'Aim by moving when using SPACE to shoot.\nAim using the mouse when clicking to shoot.'), 
+        *self.make_control_scheme_ui('Mobile', (100, 200), 'Use this if you are playing on mobile or on a touchscreen.'),
+        *self.make_control_scheme_ui('Simple', (345, 200), 'Shots will automatically go to the nearest enemy.\nUse the mouse or the arrow keys to aim manually.'),
+        *self.make_control_scheme_ui('Mixed', (590, 200), 'Aim with the arrow keys when using SPACE to shoot.\nAim using the mouse when clicking to shoot.'), 
         *self.make_control_scheme_ui('Expert', (835, 200), 'Aim with the mouse.\nRecommended for more experienced players.')
         ],
         #stage 7 --> stage 8

@@ -9,6 +9,7 @@ Priority list:
 ---High---
 -Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
 -Add some sort of auto-aim or aiming with WASD to help trackpad players. (In Progress)
+-Implement aim assist. (Brainstorming)
 
 ---Medium---
 -Make the upgrades associated to weapons/armors so that the player actually has stuff to buy.
@@ -16,10 +17,10 @@ Priority list:
 -Find more assets for backgrounds, the player, zombies and bullets.
 -Add more sounds and music.
 -Add visuals for the weapons.
--Mobile support.
+-Mobile support. (Partially Implmented)
 ---Low---
 -Add a perk system.
--Implement settings. (In Progress)
+-Implement settings. (Partially Implmented)
 
 ---Done---
 -Implement saving between sessions. (Implmented)

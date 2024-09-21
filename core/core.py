@@ -25,7 +25,7 @@ class Core:
     CORE_EVENT = pygame.event.custom_type()
     START_GAME = pygame.event.custom_type()
     END_GAME = pygame.event.custom_type()
-    IS_DEBUG : bool = False
+    IS_DEBUG : bool = True
     def __init__(self) -> None:
         self.FPS = 60
         self.PERFORMANCE_MODE = False
@@ -143,6 +143,11 @@ class Core:
         self.event_manager.bind(pygame.FINGERDOWN, self.process_touch_event)
         self.event_manager.bind(pygame.FINGERMOTION, self.process_touch_event)
         self.event_manager.bind(pygame.FINGERUP, self.process_touch_event)
+        
+        #test code for emulating touch input
+        self.event_manager.bind(pygame.MOUSEBUTTONDOWN, self.process_touch_event)
+        self.event_manager.bind(pygame.MOUSEMOTION, self.process_touch_event)
+        self.event_manager.bind(pygame.MOUSEBUTTONUP, self.process_touch_event)
     
     def process_touch_event(self, event : pygame.Event):
         if event.type == pygame.FINGERDOWN:
@@ -159,13 +164,28 @@ class Core:
             self.active_fingers[event.finger_id] = (x,y)
         
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.active_fingers[10] = (event.pos)
+            if event.touch: return
+            if not self.IS_DEBUG: return
+            finger_id : int = 10
+            x : float = event.pos[0] / self.main_display.get_width()
+            y : float = event.pos[1] / self.main_display.get_height()
+            pygame.event.post(pygame.Event(pygame.FINGERDOWN, {'finger_id' : finger_id, 'x' : x, 'y' : y}))
         
         elif event.type == pygame.MOUSEMOTION:
-            self.active_fingers[10] = (event.pos)
+            if event.touch: return
+            if not self.IS_DEBUG: return
+            finger_id : int = 10
+            x : float = event.pos[0] / self.main_display.get_width()
+            y : float = event.pos[1] / self.main_display.get_height()
+            pygame.event.post(pygame.Event(pygame.FINGERMOTION, {'finger_id' : finger_id, 'x' : x, 'y' : y}))
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            self.active_fingers.pop(10, None)
+            if event.touch: return
+            if not self.IS_DEBUG: return
+            finger_id : int = 10
+            x : float = event.pos[0] / self.main_display.get_width()
+            y : float = event.pos[1] / self.main_display.get_height()
+            pygame.event.post(pygame.Event(pygame.FINGERUP, {'finger_id' : finger_id, 'x' : x, 'y' : y}))
     
     def process_core_event():
         pass

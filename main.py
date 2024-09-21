@@ -136,7 +136,7 @@ def setup_debug_sprites():
     global fps_sprite
     global debug_sprite
 
-    fps_sprite = TextSprite(pygame.Vector2(15 + 63 - 63, 10), 'topleft', 0, 'FPS : 0', 'fps_sprite', 
+    fps_sprite = TextSprite(pygame.Vector2(10, 535), 'bottomleft', 0, 'FPS : 0', 'fps_sprite', 
                             text_settings=(font_40, 'White', False), text_stroke_settings=('Black', 2),
                             text_alingment=(9999, 5), colorkey=(255, 0,0))
 
