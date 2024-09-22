@@ -165,3 +165,10 @@ def tuple_vec_average(l : list[tuple[float, float]]) -> float:
     x_sum /= count
     y_sum /= count
     return (x_sum, y_sum)
+
+def closest_point(p1 : pygame.Vector2, p2 : pygame.Vector2, p3 : pygame.Vector2) -> pygame.Vector2:
+    delta : pygame.Vector2 = p2 - p1
+    distance_squared : float = delta.magnitude_squared()
+    nx : float = ((p3.x - p1.x) * delta.x + (p3.y - p1.y) * delta.y) / distance_squared
+    nx = pygame.math.clamp(nx, 0, 1)
+    return pygame.Vector2(delta.x * nx + p1.x, delta.y * nx + p1.y)

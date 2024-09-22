@@ -150,7 +150,7 @@ class Game:
 
     def next_wave(self):
         self.current_wave_num += 1
-        self.wave_count = self.current_wave_num
+        if self.current_wave_num is not None: self.wave_count = self.current_wave_num
         self.current_wave = self.diff_table[self.current_wave_num].copy()
         self.enemy_timer.set_duration(self.current_wave.spawn_delay)
         self.break_timer.set_duration(-1)

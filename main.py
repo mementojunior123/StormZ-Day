@@ -86,7 +86,6 @@ def start_game(event : pygame.Event):
 def detect_game_over(event : pygame.Event):
     if event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:
-            if core.game.wave_count == 1: core.game.wave_count = 0
             end_game(None)
         #elif event.key == pygame.K_F1:
             #pygame.image.save_extended(core.main_display, 'assets/screenshots/game_capture2.png', '.png')

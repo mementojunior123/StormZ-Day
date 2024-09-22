@@ -7,7 +7,7 @@ from utils.pivot_2d import Pivot2D
 
 from game.projectiles import BaseProjectile
 from game.enemy import BaseZombie
-from utils.helpers import make_upgrade_bar, reset_upgrade_bar, load_alpha_to_colorkey, make_circle
+from utils.helpers import make_upgrade_bar, reset_upgrade_bar, load_alpha_to_colorkey, make_circle, closest_point
 from utils.ui.ui_sprite import UiSprite
 from utils.my_timer import Timer
 from dataclasses import dataclass
@@ -130,6 +130,7 @@ class Player(Sprite):
 
         self.joystick : PlayerJoystick|None
         self.finger_id_stack : list[int]|None
+        self.arrow_map : dict[int, Timer|bool]|None
 
         self.dynamic_mask = True
         Player.inactive_elements.append(self)
@@ -148,9 +149,12 @@ class Player(Sprite):
             amplitude = 60
             element.joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
             element.finger_id_stack = []
+            element.arrow_map = None
         else:
             element.joystick = None
             element.finger_id_stack = None
+            element.arrow_map = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_LEFT : False, pygame.K_RIGHT : False}
+
         element.position = new_pos
         element.align_rect()
         element.zindex = 50
@@ -234,13 +238,53 @@ class Player(Sprite):
         if move_vector.magnitude() != 0: move_vector.normalize_ip()
         return move_vector
     
+    def update_arrow_map(self):
+        if not self.arrow_map: return
+        keyboard_map = pygame.key.get_pressed()
+        KEYS : tuple[int] = (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_UP)
+        any_press : bool = False
+        for key in KEYS:
+            is_pressed : bool = keyboard_map[key]
+            val : bool|Timer = self.arrow_map[key]
+            if is_pressed:
+                self.arrow_map[key] = True
+                any_press = True
+            else:
+                if val is True:
+                    self.arrow_map[key] = Timer(0.06, core_object.game.game_timer.get_time)
+                elif val is False:
+                    pass
+                else:
+                    if val.isover():
+                        self.arrow_map[key] = False
+        if not any_press:
+            for key in KEYS:
+                self.arrow_map[key] = False
+    
+    def get_arrow_map_direction(self) -> pygame.Vector2:
+        move_vector : pygame.Vector2 = pygame.Vector2(0,0)
+        if self.arrow_map[pygame.K_LEFT]:
+            move_vector += pygame.Vector2(-1, 0)
+        if self.arrow_map[pygame.K_RIGHT]:
+            move_vector += pygame.Vector2(1, 0)
+        if self.arrow_map[pygame.K_DOWN]:
+            move_vector += pygame.Vector2(0, 1)
+        if self.arrow_map[pygame.K_UP]:
+            move_vector += pygame.Vector2(0, -1)
+        if move_vector.magnitude() != 0: move_vector.normalize_ip()
+        return move_vector
+    
     def input_action(self):
+        self.update_arrow_map()
         if not self.weapon.stats.fire_mode == FiringModes.auto: return
         control_scheme : str = core_object.settings.info['ControlMethod']
         if control_scheme == 'Mobile':
             if self.finger_id_stack and core_object.active_fingers:
                 self.shoot('Touch', pygame.Vector2(core_object.active_fingers[self.finger_id_stack[-1]]))
             return
+        elif control_scheme != 'Expert':
+            arrow_dir = self.get_arrow_map_direction()
+            if arrow_dir.magnitude() > 0: self.last_shot_direction = arrow_dir
         
         if (pygame.mouse.get_pressed()[0] and core_object.game.game_timer.get_time() > 0.3): 
             self.shoot('Mouse')
@@ -291,7 +335,7 @@ class Player(Sprite):
         control_scheme : str = core_object.settings.info['ControlMethod']
         mouse_direction : pygame.Vector2 = (pygame.Vector2(pygame.mouse.get_pos()) - self.position).normalize()
         key_direction : pygame.Vector2 = self.last_shot_direction.copy()
-        arrow_direction : pygame.Vector2 = self.get_arrow_key_vector()
+        arrow_direction : pygame.Vector2 = self.get_arrow_map_direction()
         shot_direction : pygame.Vector2
         if control_scheme == 'Expert':
             shot_direction = mouse_direction
@@ -309,7 +353,7 @@ class Player(Sprite):
             else:
                 if arrow_direction.magnitude() != 0:
                     shot_direction = self.correct_aim(arrow_direction)
-                elif not BaseZombie.active_elements:
+                elif not BaseZombie.active_elements or True:
                     shot_direction = self.correct_aim(key_direction) 
                 else: 
                     sorted_enemies = sorted(BaseZombie.active_elements, key=lambda element : (element.position - self.position).magnitude_squared())
@@ -324,10 +368,29 @@ class Player(Sprite):
             result = self.weapon.shoot(shot_origin, shot_direction)
             if result:
                 core_object.bg_manager.play_sfx(self.shot_sfx if self.weapon.stats.firerate >= 0.14 else self.fast_shot_sfx, 1)
-                self.last_shot_direction = shot_direction.copy()
+        self.last_shot_direction = shot_direction.copy()
 
     def correct_aim(self, shot_direction : pygame.Vector2) -> pygame.Vector2:
-        return shot_direction
+        if not BaseZombie.active_elements: return shot_direction
+        closest_angle : float = 9999
+        closest_enemy : BaseZombie|None = None
+        closest_enemy_direction : pygame.Vector2|None = None
+        V = pygame.Vector2
+        player_to_zomb_vec : pygame.Vector2
+        angle_diff : float
+        for enemy in BaseZombie.active_elements:
+            player_to_zomb_vec = (enemy.position - self.position).normalize()
+            angle_diff = abs((player_to_zomb_vec).angle_to(shot_direction))
+            if angle_diff > 180: angle_diff = 360 - angle_diff
+            if angle_diff < closest_angle:
+                closest_angle = angle_diff
+                closest_enemy = enemy
+                closest_enemy_direction = player_to_zomb_vec
+        
+        if not enemy: return shot_direction
+        if closest_angle <= 0.8 or closest_angle >= 22.5: return shot_direction
+        return closest_enemy_direction
+
 
     def update_healthbar(self):
         hp_percent : float = self.hp / self.max_hp
@@ -417,7 +480,8 @@ class Player(Sprite):
         self.current_direction = None
         self.last_shot_direction = None
         self.joystick = None
-        self.finger_id_stack
+        self.finger_id_stack = None
+        self.arrow_map = None
         
         self.hp = None
         self.max_hp = None
