@@ -5,6 +5,7 @@ from collections import deque
 from utils.my_timer import Timer
 from core.event_manger import EventManger
 import game.game_module
+from game.sprite import Sprite
 from core.settings import Settings
 from core.bg_manager import BgManager
 from core.ui import Ui
@@ -56,6 +57,10 @@ class Core:
         Timer.time_source = self.global_timer.get_time
 
         self.window_bools : dict = {'Shown' : True, 'input_focused' : True}
+        self.debug_sprite : TextSprite
+        self.fps_sprite : TextSprite
+        self.cycle_timer : Timer = Timer(-1)
+        self.frame_counter : int = 0
 
     def is_web(self) -> bool:
         return self.CURRENT_PLATFORM == WEBPLATFORM
@@ -99,6 +104,73 @@ class Core:
 
     def init(self, main_display : pygame.Surface):
         self.main_display = main_display
+        
+    
+    def setup_debug_sprites(self):
+        self.fps_sprite = TextSprite(pygame.Vector2(10, 535), 'bottomleft', 0, 'FPS : 0', 'fps_sprite', 
+                            text_settings=(self.game.font_40, 'White', False), text_stroke_settings=('Black', 2),
+                            text_alingment=(9999, 5), colorkey=(255, 0,0))
+
+        self.debug_sprite = TextSprite(pygame.Vector2(15, 200), 'midright', 0, '', 'debug_sprite', 
+                                text_settings=(self.game.font_40, 'White', False), text_stroke_settings=('Black', 2),
+                                text_alingment=(9999, 5), colorkey=(255, 0,0), zindex=999)
+        
+        self.cycle_timer.set_duration(0.1)
+    
+    def start_game(self, event : pygame.Event):
+        if event.type != self.START_GAME: return
+        
+        self.menu.prepare_exit()
+        self.game.start_game()
+        self.setup_debug_sprites()
+
+        self.event_manager.bind(pygame.MOUSEBUTTONDOWN, Sprite.handle_mouse_event)
+        self.event_manager.bind(pygame.FINGERDOWN, Sprite.handle_touch_event)
+        self.event_manager.bind(pygame.KEYDOWN, self.detect_game_exit)
+
+        
+        if self.IS_DEBUG: 
+            self.main_ui.add(self.fps_sprite)
+            self.main_ui.add(self.debug_sprite)
+        
+    def detect_game_exit(self, event : pygame.Event):
+        if event.type == pygame.KEYDOWN: 
+            if event.key == pygame.K_ESCAPE:
+                self.end_game(None)
+            #elif event.key == pygame.K_F1:
+                #pygame.image.save_extended(core.main_display, 'assets/screenshots/game_capture2.png', '.png')
+    
+    def end_game(self, event : pygame.Event = None):
+        victory : bool
+        if event:
+            victory = event.victory
+        else:
+            victory = False
+        tokens_gained = ((self.game.wave_count * 5)  + (self.game.score // 12) + 10) if (self.game.wave_count > 0) and (self.game.score > 0) else 0
+        self.storage.upgrade_tokens += tokens_gained
+        self.menu.prepare_entry(4)
+        self.menu.enter_stage4(self.game.score, self.game.wave_count, tokens_gained, victory)
+        if self.game.score > self.storage.high_score:
+            self.storage.high_score = self.game.score
+        if self.game.wave_count > self.storage.high_wave:
+            self.storage.high_wave = self.game.wave_count
+        
+        self.main_ui.clear_all()
+        self.game.end_game()
+        
+
+        self.event_manager.unbind(pygame.MOUSEBUTTONDOWN, Sprite.handle_mouse_event)
+        self.event_manager.unbind(pygame.FINGERDOWN, Sprite.handle_touch_event)
+        self.event_manager.unbind(pygame.KEYDOWN, self.detect_game_exit)
+        if self.menu.USE_RESULT_THEME:
+            self.bg_manager.play(self.menu.main_theme, 1, loops=-1)
+        elif not victory:
+            self.bg_manager.play(self.menu.fail_theme, 1, loops=1)
+        else:
+            self.bg_manager.play(self.menu.victory_theme, 1, loops=1)
+        
+        self.save_storage()
+
     
     def close_game(self, event : pygame.Event):
         if not self.is_web(): self.settings.save()
@@ -134,6 +206,9 @@ class Core:
     
     def make_connections(self):
         self.event_manager.bound_actions[pygame.QUIT] = [self.close_game]
+
+        self.event_manager.bind(self.START_GAME, self.start_game)
+        self.event_manager.bind(self.END_GAME, self.end_game)
 
         self.event_manager.bind(pygame.WINDOWHIDDEN, self.handle_window_event)
         self.event_manager.bind(pygame.WINDOWSHOWN, self.handle_window_event)
@@ -259,7 +334,7 @@ class Core:
         average = total / len(self.delta_stream)
         return 60 / average
     
-    def __hints(self):
+    def _hints(self):
         global TextSprite
         from utils.ui.textsprite import TextSprite
 

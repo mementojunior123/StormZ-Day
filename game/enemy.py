@@ -531,3 +531,9 @@ class RangedZombie(BaseZombie):
         self.weapon = None
 
 ZombieTypes.get_dict()
+
+for _ in range(90):
+    NormalZombie()
+    QuickZombie()
+    TankZombie()
+    RangedZombie()

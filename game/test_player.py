@@ -76,3 +76,4 @@ class TestPlayer(Sprite):
         self.color_image_list = None
 
 Sprite.register_class(TestPlayer)
+#TestPlayer()

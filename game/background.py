@@ -37,3 +37,5 @@ class Background(Sprite):
 
     def switch_area(self, new_area):
         self.image = self.areas[new_area]
+
+Background()

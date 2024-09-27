@@ -237,8 +237,6 @@ class PeirceProjectile(BaseProjectile):
         self.health -= 1
         if self.health <= 0: self.kill_instance_safe()
         
-    
-
-Sprite.register_class(BaseProjectile)
-Sprite.register_class(NormalProjectile)
-Sprite.register_class(PeirceProjectile)
+for _ in range(99):
+    NormalProjectile()
+    PeirceProjectile()

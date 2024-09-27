@@ -494,6 +494,7 @@ class Player(Sprite):
 
 Sprite.register_class(Player)
 
+
 def make_connections():
     core_object.event_manager.bind(pygame.KEYDOWN, Player.receive_key_event)
     core_object.event_manager.bind(pygame.MOUSEBUTTONDOWN, Player.receive_mouse_event)
@@ -505,3 +506,5 @@ def remove_connections():
     core_object.event_manager.unbind(pygame.MOUSEBUTTONDOWN, Player.receive_mouse_event)
     core_object.event_manager.bind(pygame.FINGERDOWN, Player.receive_touch_event)
     core_object.event_manager.bind(pygame.FINGERUP, Player.receive_touch_event)
+    
+Player()
