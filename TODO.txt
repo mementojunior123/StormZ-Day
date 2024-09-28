@@ -7,20 +7,20 @@ Basic outline:
 
 Priority list:
 ---High---
--Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
-
----Medium---
 -Make the upgrades associated to weapons/armors so that the player actually has stuff to buy.
+-Revamp the menu to accomodate for these changes. (See menu_flowchart2.png)
 -Do more game balancing.
+---Medium---
+-Add a perk system.
 -Find more assets for backgrounds, the player, zombies and bullets.
 -Add more sounds and music.
+---Low---
 -Add visuals for the weapons.
 
----Low---
--Add a perk system.
 
 
 ---Partially Done---
+-Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
 -Implement settings. (Partially Implmented)
 -Mobile support. (Partially Implmented)
 
