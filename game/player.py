@@ -353,7 +353,7 @@ class Player(Sprite):
             else:
                 if arrow_direction.magnitude() != 0:
                     shot_direction = self.correct_aim(arrow_direction)
-                elif not BaseZombie.active_elements or True:
+                elif not BaseZombie.active_elements:
                     shot_direction = self.correct_aim(key_direction) 
                 else: 
                     sorted_enemies = sorted(BaseZombie.active_elements, key=lambda element : (element.position - self.position).magnitude_squared())
