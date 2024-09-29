@@ -326,7 +326,7 @@ class Game:
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), setattr, self.player, 'position', pygame.Vector2(480, 270))
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.background.switch_area, self.current_area)
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), BaseProjectile.kill_all_instances)
-        core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.player.armor.refill)
+        if self.player.armor: core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.player.armor.refill)
         core_object.task_scheduler.schedule_task((fade_time[0] / 2 + anim_time + 0.01, self.game_timer.get_time, 1), self.player.update_armor_healthbar)
         core_object.task_scheduler.schedule_task((fade_time[0] + fade_time[1] + anim_time + 0.01, self.game_timer.get_time, 1), self.transition_to_break, 1)
 
