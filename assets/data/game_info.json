@@ -1,17 +1,34 @@
 {
     "armor_equipped" : null, 
-    "owned_armors" : [], 
-    "weapon_equipped" : "Pistol", 
-    "owned_weapons" : [
-        "Pistol"
+    "owned_armors" : [
+        "Light"
     ], 
-    "highscore" : 0, 
-    "highest_wave" : 1, 
-    "tokens" : 20, 
-    "general_upgrades" : {
-        "Firerate" : 0, 
-        "Damage" : 0, 
-        "Vitality" : 0
+    "weapon_equipped" : "Rifle", 
+    "owned_weapons" : [
+        "Pistol", 
+        "Rifle"
+    ], 
+    "current_weapon_perks" : {
+        "Pistol" : {
+            "Damage" : 2
+        }, 
+        "Rifle" : {
+            "Firerate" : 1, 
+            "Damage" : 1
+        }, 
+        "Shotgun" : {}, 
+        "Piercer" : {}
     }, 
-    "isvalid" : true
+    "current_armor_perks" : {
+        "Light" : {
+            "Vitality" : 1
+        }, 
+        "Balanced" : {}, 
+        "Heavy" : {}, 
+        "Adaptative" : {}
+    }, 
+    "highscore" : 1, 
+    "highest_wave" : 1, 
+    "tokens" : 25, 
+    "isvalid" : 2
 }

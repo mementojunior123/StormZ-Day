@@ -161,7 +161,7 @@ class Player(Sprite):
 
         element.pivot = Pivot2D(element._position, element.image, (0, 0, 255))
 
-        element.max_hp = 5 * (1 + core_object.storage.general_upgrades['Vitality'] * 0.2)
+        element.max_hp = 5 #* (1 + core_object.storage.general_upgrades['Vitality'] * 0.2)
         element.hp = element.max_hp
         
         use_debug_weapon = 'debug' if (pygame.key.get_pressed()[pygame.K_o]) and core_object.IS_DEBUG else False
@@ -169,8 +169,8 @@ class Player(Sprite):
         element.weapon.get_game_source()
 
         element.weapon.stats.reset()
-        element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.firerate_mult, 0.2 * core_object.storage.general_upgrades['Firerate']))
-        element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.dmg_mult, 0.2 * core_object.storage.general_upgrades['Damage']))
+        #element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.firerate_mult, 0.2 * core_object.storage.general_upgrades['Firerate']))
+        #element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.dmg_mult, 0.2 * core_object.storage.general_upgrades['Damage']))
         element.weapon.ready_shot_cooldown()
 
         element.armor = ARMORS[core_object.storage.armor_equipped]

@@ -194,11 +194,38 @@ class Menu(BaseMenu):
     main_theme.set_volume(0.35)
     USE_RESULT_THEME = True
     def init(self):
+        self.ENTRY_TABLE : dict[int, Callable[[], None]] = {
+            1 : self.enter_stage1,
+            2 : self.enter_stage2,
+            3 : self.enter_stage3,
+            4 : self.enter_stage4,
+            5 : self.enter_stage5,
+            6 : self.enter_stage6,
+            7 : self.enter_stage7,
+            8 : self.enter_stage8,
+            9 : self.enter_stage9,
+            10 : self.enter_stage10,
+            11 : self.enter_stage11,
+            12 : self.enter_stage12,
+            13 : self.enter_stage13,
+            14 : self.enter_stage14
+        }
+        self.EXIT_TABLE : dict[int, Callable[[], None]] = {
+            2 : self.exit_stage2,
+            7 : self.exit_stage7,
+            8 : self.exit_stage8,
+            11 : self.exit_stage11,
+            12 : self.exit_stage12,
+            13 : self.exit_stage13,
+            14 : self.exit_stage14
+        }
+
         self.bg_color = (94, 129, 162)
         self.stage = 1
         self.stage_data : list[dict] = [{} for _ in range(20 + 1)]
         self.stage_data[0] = None
         window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
         centerx = window_size[0] // 2
         upgrade_bar_surf1 = make_upgrade_bar()
         self.stages = [None, 
@@ -214,32 +241,34 @@ class Menu(BaseMenu):
         BaseUiElements.new_text_sprite('Mouse to aim', (Menu.font_50, 'Black', False), 0, 'topright', (945, 260)),
         BaseUiElements.new_text_sprite('P to pause', (Menu.font_50, 'Black', False), 0, 'topright', (945, 320))], 
 
-        #stage1 --> stage 2
-        [BaseUiElements.new_text_sprite('Upgrades', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
-        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
-        BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+        #--> stage 2
+        [BaseUiElements.new_text_sprite('Loadout', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_text_sprite('Weapon Equipped : Pistol', (Menu.font_50, 'Black', False), 0, 'midleft', (15, 100), name='weapon_equipped'),
+        BaseUiElements.new_button('BlueButton', 'Modify', 1, 'midleft', (15, 145), (0.4, 1.0), 
+        {'name' : 'modify_weapon'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_text_sprite('Armor Equipped : None', (Menu.font_50, 'Black', False), 0, 'midleft', (15, 295), name='armor_equipped'),
+        BaseUiElements.new_button('BlueButton', 'Modify', 1, 'midleft', (15, 340), (0.4, 1.0), 
+        {'name' : 'modify_armor'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (window_x - 20, window_y - 15), (0.4, 1.0), 
         {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        BaseUiElements.new_button('BlueButton', 'Back', 2, 'bottomleft', (15, window_y - 15), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx + 100, window_size[1] - 25), (0.4, 1.0), 
-        {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
-        
-        *self.make_general_upgrade_bar('Firerate', pygame.Vector2(180, 110), 'Shoot faster. 20% per stack.'),
-        *self.make_general_upgrade_bar('Damage', pygame.Vector2(465, 110), 'Deal more damage. 20% per stack.'),
-        *self.make_general_upgrade_bar('Vitality', pygame.Vector2(750, 110), 'Get more health. 20% per stack.')
+        BaseUiElements.new_button('BlueButton', 'Shop', 3, 'midbottom', (centerx - 90, window_y - 15), (0.4, 1.0), 
+        {'name' : 'shop_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Armory', 4, 'midbottom', (centerx + 90, window_y - 15), (0.4, 1.0), 
+        {'name' : 'armory_button'}, (Menu.font_40, 'Black', False)),
         ],
 
-        #stage 2 --> stage 3
+        #--> stage 3
         [BaseUiElements.new_text_sprite('Weapons', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-         BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
-        {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
+        #BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+        #{'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx - 100, window_size[1] - 25), (0.4, 1.0), 
-        {'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx + 100, window_size[1] - 25), (0.4, 1.0), 
-        {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
+        #BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx - 100, window_size[1] - 25), (0.4, 1.0), 
+        #{'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
+        #BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx + 100, window_size[1] - 25), (0.4, 1.0), 
+        #{'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
         UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
         TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
         *self.make_weapon_ui('Pistol', (100, 110), 'A budget starting weapon.'), 
@@ -247,7 +276,7 @@ class Menu(BaseMenu):
         *self.make_weapon_ui('Shotgun', (590, 110), 'Shoots multiple pellets at once, dealing big damage.'), 
         *self.make_weapon_ui('Piercer', (835, 110), 'Bullets go trough enemies. Useful when enemies start to stack.')
         ],
-        #stage 3 --> stage 4
+        #--> stage 4
         [BaseUiElements.new_text_sprite('Results', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         BaseUiElements.new_button('BlueButton', 'Next', 1, 'midbottom', (centerx, window_size[1] - 15), (0.35, 1), 
         {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
@@ -261,14 +290,14 @@ class Menu(BaseMenu):
         TextSprite(pygame.Vector2(centerx, 340), 'midtop', 0, '0', 'token_count', None, None, 0, (Menu.font_50, 'Black', False), colorkey=[0,255,0]),
         TextSprite(pygame.Vector2(centerx, 390), 'midtop', 0, 'Current Token Count : 0', 'current_token_count', None, None, 0, (Menu.font_50, 'Black', False), colorkey=[0,255,0]),
         ],
-        #stage 4 --> stage 5
+        #--> stage 5
         [BaseUiElements.new_text_sprite('Armors', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
-         BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
-        {'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
+        #BaseUiElements.new_button('GreenButton', 'Ready', 1, 'bottomright', (940, window_size[1] - 15), (0.4, 1.0), 
+        #{'name' : 'ready_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
-        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx - 100, window_size[1] - 25), (0.4, 1.0), 
-        {'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
+        #BaseUiElements.new_button('BlueButton', 'Prev', 1, 'midbottom', (centerx - 100, window_size[1] - 25), (0.4, 1.0), 
+        #{'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
         UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
         TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
         *self.make_armor_ui('Light', (100, 110), 'Offers decent protection and keeps you moving fast.'), 
@@ -278,7 +307,7 @@ class Menu(BaseMenu):
 '''Completely negates all damage while active, but falls apart
 very quickly if you get overwhelmed.
 Useful for skilled players.''')],
-        #stage 5 --> stage 6
+        #--> stage 6
         [
         BaseUiElements.new_text_sprite('Settings', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         BaseUiElements.new_text_sprite('Current control scheme : Simple', (Menu.font_50, 'Black', False), 0, 'topleft', (15, 90), name='scheme_title'),
@@ -290,7 +319,7 @@ Useful for skilled players.''')],
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'bottomleft', (15, window_size[1] - 15), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
         ],
-        #stage 6 --> stage 7
+        #--> stage 7
         [
         BaseUiElements.new_text_sprite('Choose control scheme', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         *self.make_control_scheme_ui('Mobile', (100, 200), 'Use this if you are playing on mobile or on a touchscreen.'),
@@ -298,14 +327,87 @@ Useful for skilled players.''')],
         *self.make_control_scheme_ui('Mixed', (590, 200), 'Aim with the arrow keys when using SPACE to shoot.\nAim using the mouse when clicking to shoot.'), 
         *self.make_control_scheme_ui('Expert', (835, 200), 'Aim with the mouse.\nRecommended for more experienced players.')
         ],
-        #stage 7 --> stage 8
+        #--> stage 8
         [
         BaseUiElements.new_text_sprite('Are you sure? This action is irreversible.', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'midleft', (200, 200), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('RedButton', 'RESET', 1, 'midright', (740, 200), (0.4, 1.0), 
         {'name' : 'reset_button'}, (Menu.font_40, 'Black', False)),
-        ]
+        ],
+        #--> stage 9
+        [
+        BaseUiElements.new_text_sprite('Shop', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_text_sprite('Weapons', (Menu.font_50, 'Black', False), 0, 'midtop', (225, 140)),
+        BaseUiElements.new_button('BlueButton', 'Browse', 1, 'midtop', (225, 200), (0.4, 1.0), name='weapon_browse'),
+        BaseUiElements.new_text_sprite('Armor', (Menu.font_50, 'Black', False), 0, 'midtop', (window_x - 225, 140)),
+        BaseUiElements.new_button('BlueButton', 'Browse', 2, 'midtop', (window_x - 225, 200), (0.4, 1.0), name='armor_browse'),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        ],
+        #--> stage 10
+        [
+        BaseUiElements.new_text_sprite('Armory', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_text_sprite('Weapons', (Menu.font_50, 'Black', False), 0, 'midtop', (225, 140)),
+        BaseUiElements.new_button('BlueButton', 'Browse', 1, 'midtop', (225, 200), (0.4, 1.0), name='weapon_browse'),
+        BaseUiElements.new_text_sprite('Armor', (Menu.font_50, 'Black', False), 0, 'midtop', (window_x - 225, 140)),
+        BaseUiElements.new_button('BlueButton', 'Browse', 2, 'midtop', (window_x - 225, 200), (0.4, 1.0), name='armor_browse'),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        ],
+        #--> stage 11
+        [
+        BaseUiElements.new_text_sprite('Armory-Weapons', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'bottomleft', (20, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Next', 1, 'bottomright', (window_x - 20, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Buy', 1, 'midbottom', (centerx, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'weapon_interact'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Upgrade', 1, 'midbottom', (centerx + 90, window_y - 15), (0.4, 1.0), 
+        {'name' : 'upgrade_button'}, (Menu.font_40, 'Black', False)),
+        
+        ],
+        #--> stage 12
+        [
+        BaseUiElements.new_text_sprite('Upgrade Weapon', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        ],
+        #--> stage 13
+        [
+        BaseUiElements.new_text_sprite('Armory-Armor', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        BaseUiElements.new_button('BlueButton', 'Prev', 1, 'bottomleft', (20, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'prev_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Next', 1, 'bottomright', (window_x - 20, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'next_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Buy', 1, 'midbottom', (centerx, window_size[1] - 25), (0.4, 1.0), 
+        {'name' : 'armor_interact'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_button('BlueButton', 'Upgrade', 1, 'midbottom', (centerx + 90, window_y - 15), (0.4, 1.0), 
+        {'name' : 'upgrade_button'}, (Menu.font_40, 'Black', False)),
+        ],
+        #--> stage 14
+        [
+        BaseUiElements.new_text_sprite('Upgrade Armor', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        BaseUiElements.new_button('BlueButton', 'Back', 1, 'topleft', (15, 10), (0.4, 1.0), 
+        {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        ],
         ]
     
     def enter_stage1(self):
@@ -322,44 +424,13 @@ Useful for skilled players.''')],
 
     def enter_stage2(self):
         self.stage = 2
-        for upgrade in core_object.storage.general_upgrades:
-            self.update_general_upgrade_bar(upgrade)
-        self.update_token_count()
-
-    def make_general_upgrade_bar(self, name : str, midtop : pygame.Vector2, tooltip : str):
-        upgrade_bar_surf1 = make_upgrade_bar()
-        title = TextSprite(midtop, 'midtop', 0, f'{name} I\nCost : 2', f'{name}_upg_title', {}, {}, 0, 
-                           (Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
-        bar = UiSprite(upgrade_bar_surf1.copy(), upgrade_bar_surf1.get_rect(midtop = midtop + (0, 75)), 0, f'{name}_upg_bar')
-
-        button = BaseUiElements.new_button('BlueButton', 'Buy', 1, 'midtop', midtop + (0, 200), (0.35, 1), 
-        {'name' : f'buy_{name}'}, (Menu.font_40, 'Black', False))
-
-        tooltip = ToolTip(pygame.Vector2(15, 440), 'bottomleft', 0, tooltip, title.rect.unionall([bar.rect, button.rect]), f'tooltip_{name}',
-                          text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
-        return title, bar, button, tooltip
-
-    def update_general_upgrade_bar(self, name : str):
-        upgrade_bar = self.get_sprite_by_name(2, f'{name}_upg_bar')
-        if not upgrade_bar: return
-        upgrade_level : int = core_object.storage.general_upgrades[name]
-        upgrade_title : TextSprite = self.get_sprite_by_name(2, f'{name}_upg_title')
-        midtop : pygame.Vector2 = pygame.Vector2(upgrade_title.rect.midtop)
-        reset_upgrade_bar(upgrade_bar.surf)
-        for i in range(upgrade_level):
-            paint_upgrade_bar(upgrade_bar.surf, i)
-            if i >= 4: break
-
-        if upgrade_level >= 5:
-            new_button = BaseUiElements.new_button('BlueButton', 'MAXED', 1, 'midtop', midtop + (0, 200), (0.35, 1), 
-                                                   {'name' : f'buy_{name}'}, (Menu.font_40, 'Black', False))
-            self.find_and_replace(new_button, 2, name= f'buy_{name}')
-            upgrade_title.text = f'{name} {'MAXED'}\nCost : MAXED'
-        else:
-            new_button = BaseUiElements.new_button('BlueButton', 'Buy', 1, 'midtop', midtop + (0, 220), (0.35, 1), 
-                                                   {'name' : f'buy_{name}'}, (Menu.font_40, 'Black', False))
-            self.find_and_replace(new_button, 2, name=f'buy_{name}')
-            upgrade_title.text = f'{name} {to_roman(upgrade_level + 1)}\nCost : {core_object.storage.COST_TABLE['General Upgrades'][name][upgrade_level+1]}'
+        new_sprite1 : UiSprite = BaseUiElements.new_text_sprite(f'Weapon Equipped : {core_object.storage.weapon_equipped}', (Menu.font_50, 'Black', False), 0, 
+                                                                'midleft', (15, 100), name='weapon_equipped')
+        self.find_and_replace(new_sprite1, 2, name='weapon_equipped')
+        armor_equipped : str = 'None' if core_object.storage.armor_equipped is None else core_object.storage.armor_equipped
+        new_sprite2 : UiSprite = BaseUiElements.new_text_sprite(f'Armor Equipped : {armor_equipped}', (Menu.font_50, 'Black', False), 0, 
+                                                                'midleft', (15, 295), name='armor_equipped')
+        self.find_and_replace(new_sprite2, 2, name='armor_equipped')
 
     def update_token_count(self, current_stage : int = 2):
         token_count : TextSprite = self.get_sprite_by_name(current_stage, 'token_count')
@@ -425,16 +496,30 @@ Useful for skilled players.''')],
         pass
 
     def enter_stage3(self):
+        self.stage_data[3]['prev_stage'] = self.stage
         self.stage = 3
         for weapon in core_object.storage.ALL_WEAPONS:
             self.update_weapon_ui_stage3(weapon)
         self.update_token_count(self.stage)
-    
+
+    def exit_stage3(self):
+        prev_stage : int = self.stage_data[3]['prev_stage']
+        self.stage_data[3].clear()
+        self.enter_any_stage(prev_stage)
+
+
     def enter_stage5(self):
+        self.stage_data[5]['prev_stage'] = self.stage
         self.stage = 5
         for armor in core_object.storage.ALL_ARMORS:
             self.update_armor_ui_stage5(armor)
         self.update_token_count(self.stage)
+    
+    def exit_stage5(self):
+        prev_stage : int = self.stage_data[5]['prev_stage']
+        self.stage_data[5].clear()
+        self.enter_any_stage(prev_stage)
+
 
     def enter_stage4(self, score : int, wave_count : int, tokens_gained : int, game_won : bool = False):
         prev_highscore : int = core_object.storage.high_score
@@ -472,6 +557,7 @@ Useful for skilled players.''')],
     def exit_stage7(self):
         old_stage : int = self.stage_data[7].get('prev_stage', None)
         if not old_stage: old_stage = 1
+        if old_stage == 7: old_stage = 1
         self.stage_data[7].clear()
         self.enter_any_stage(old_stage)
     
@@ -482,28 +568,336 @@ Useful for skilled players.''')],
     def exit_stage8(self):
         old_stage : int = self.stage_data[8].get('prev_stage', None)
         if not old_stage: old_stage = 1
+        if old_stage == 8: old_stage = 1
         self.stage_data[8].clear()
-        self.enter_any_stage(old_stage)
+        self.goto_stage(old_stage)
 
-    def enter_any_stage(self, new_stage : int):
-        match new_stage:
-            case 1|7:
-                self.enter_stage1()
-            case 2:
-                self.enter_stage2()
-            case 3:
-                self.enter_stage3()
-            case 4:
-                self.enter_stage4()
-            case 5:
-                self.enter_stage5()
-            case 6:
-                self.enter_stage6()
-            case 8:
-                self.enter_stage8()
-            case _:
-                self.stage = new_stage
+    def enter_stage9(self):
+        self.stage = 9
+        self.update_token_count(self.stage)
+
+    def enter_stage10(self):
+        self.stage = 10
+        self.update_token_count(self.stage)
     
+    def enter_stage11(self, goto_weapon_equipped : bool = False):
+        self.stage = 11
+        weapon_equipped_index : int = core_object.storage.ALL_WEAPONS.index(core_object.storage.weapon_equipped)
+        current_weapon_index : int = weapon_equipped_index if goto_weapon_equipped else self.stage_data[11].get('weapon_index', weapon_equipped_index)
+        self.stage_data[11] = {'weapon_index' : current_weapon_index, 
+                               'all_weapons_lentgh' : len(core_object.storage.ALL_WEAPONS), 
+                               'current_weapon' : core_object.storage.ALL_WEAPONS[current_weapon_index]}
+        
+        self.replace_stage11_weapon_ui(None, self.stage_data[11]['current_weapon'])
+        self.update_token_count(self.stage)
+        self.udpdate_stage11_weapon_interact()
+    
+    def make_stage11_weapon_ui(self, weapon_name : str):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        weapon_title : UiSprite = BaseUiElements.new_text_sprite(weapon_name, (Menu.font_50, 'Black', False), 0, 'midtop', (centerx, 100), name='weapon_title')
+        all_base_stats = core_object.storage.BASE_WEAPON_STATS[weapon_name]
+        base_stats_paragraph = '\n'.join(['Base Stats:'] + [f'{key} : {all_base_stats[key]}' for key in all_base_stats]) if all_base_stats else ''
+        base_stats : UiSprite = BaseUiElements.new_text_sprite(base_stats_paragraph, (Menu.font_50, 'Black', False), 0, 'topleft', (15, 175), name='base_weapon_stats')
+        all_weapon_perks = core_object.storage.current_weapon_perks[weapon_name]
+        weapon_perks_paragraph = '\n'.join(['Perks:'] + [core_object.storage.format_perk(key, all_weapon_perks[key]) for key in all_weapon_perks]) if all_weapon_perks else ''
+        weapon_perks : UiSprite = BaseUiElements.new_text_sprite(weapon_perks_paragraph, (Menu.font_50, 'Black', False), 0, 'topright', (945, 175), name='the_weapon_perks')
+        return (weapon_title, base_stats, weapon_perks)
+    
+    def remove_stage11_weapon_ui(self, weapon_name : str):
+        if not self.get_sprite_by_name(11, 'weapon_title'): return
+        self.stages[11].remove(self.get_sprite_by_name(11, 'weapon_title'))
+        self.stages[11].remove(self.get_sprite_by_name(11, 'base_weapon_stats'))
+        self.stages[11].remove(self.get_sprite_by_name(11, 'the_weapon_perks'))
+
+    def add_stage11_weapon_ui(self, weapon_name : str):
+        for ui_sprite in self.make_stage11_weapon_ui(weapon_name):
+            self.stages[11].append(ui_sprite)
+    
+    
+    
+    def replace_stage11_weapon_ui(self, old_weapon_name : str, weapon_name : str):
+        self.remove_stage11_weapon_ui(old_weapon_name)
+        self.add_stage11_weapon_ui(weapon_name)
+    
+    def update_stage11_weapon_ui(self, weapon_name : str):
+        self.remove_stage11_weapon_ui(weapon_name)
+        self.add_stage11_weapon_ui(weapon_name)
+    
+    def udpdate_stage11_weapon_interact(self):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        new_text : str
+        current_weapon : str = self.stage_data[11]['current_weapon']
+        if current_weapon == core_object.storage.weapon_equipped:
+            new_text = 'Equipped'
+            self.get_sprite_by_name(11, 'upgrade_button').visible = True
+        elif current_weapon in core_object.storage.owned_weapons:
+            new_text = 'Equip'
+            self.get_sprite_by_name(11, 'upgrade_button').visible = True
+        else:
+            new_text = 'Buy'
+            self.get_sprite_by_name(11, 'upgrade_button').visible = False
+        new_sprite : UiSprite = BaseUiElements.new_button('BlueButton', new_text, 1, 'midbottom', (centerx - 90, window_size[1] - 15), (0.4, 1.0), 
+        {'name' : 'weapon_interact'}, (Menu.font_40, 'Black', False))
+        self.find_and_replace(new_sprite, 11, name='weapon_interact')
+    
+    def exit_stage11(self):
+        self.remove_stage11_weapon_ui(self.stage_data[11]['current_weapon'])
+        #self.stage_data[11].clear()
+    
+    def enter_stage12(self, weapon_name : str):
+        self.stage = 12
+        self.stage_data[12]['weapon'] = weapon_name
+        self.stage_data[12]['upgrade_sprites'] = []
+        self.update_token_count(self.stage)
+        self.replace_stage12_updgrade_ui(weapon_name)
+    
+    def make_stage12_updgrade_ui(self, weapon_name : str):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        weapon_title : UiSprite = BaseUiElements.new_text_sprite(weapon_name, (Menu.font_50, 'Black', False), 0, 'midtop', (centerx, 100), name='weapon_title')
+
+        for ui_sprite in (weapon_title,):
+            self.stages[12].append(ui_sprite)
+        self.make_stage12_upgrade_section(weapon_name)
+    
+    def make_stage12_upgrade_section(self, weapon_name : str):
+        curr_x : int = 15
+        curr_y : int = 135
+        for perk in core_object.storage.WEAPON_AVAILABLE_PERKS[weapon_name]:
+            max_level : int = core_object.storage.WEAPON_AVAILABLE_PERKS[weapon_name][perk]
+            current_level : int|None = core_object.storage.current_weapon_perks[weapon_name].get(perk, None)
+            header_text : str
+            cost_text : str
+            button_text : str = 'Upgrade'
+            if current_level is None:
+                header_text = core_object.storage.format_perk(perk, 1)
+                cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][1]}'
+            elif current_level < max_level:
+                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][current_level + 1]}'
+            else:
+                header_text = core_object.storage.format_perk(perk, current_level)
+                cost_text = f'Cost : MAXED'
+                button_text = 'MAXED'
+            
+            header_sprite = BaseUiElements.new_text_sprite(header_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y))
+            cost_sprite = BaseUiElements.new_text_sprite(cost_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y + 30))
+            button_sprite = BaseUiElements.new_button('BlueButton', button_text, 1, 'topleft', (curr_x, curr_y + 60), (0.4, 1), name=f'upgrade_perk_{perk}')
+            tooltip_sprite = ToolTip(pygame.Vector2(15, 430), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
+                                     header_sprite.rect.unionall([cost_sprite.rect, button_sprite.rect]), text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
+            for ui_sprite in (header_sprite, cost_sprite, button_sprite, tooltip_sprite):
+                self.stages[12].append(ui_sprite)
+                self.stage_data[12]['upgrade_sprites'].append(ui_sprite)
+            
+            curr_y += 165
+    
+    def upgrade_stage12_weapon_perk(self, perk_name : str):
+        current_weapon : str = self.stage_data[12]['weapon']
+        current_level : int|None = core_object.storage.current_weapon_perks[current_weapon].get(perk_name, None)
+        max_level : int = core_object.storage.WEAPON_AVAILABLE_PERKS[current_weapon][perk_name]
+        if current_level:
+            if current_level >= max_level:
+                self.alert_player('This upgrade is already maxed out!')
+                return
+        
+        next_level : int = current_level + 1 if current_level is not None else 1
+        cost : int = core_object.storage.COST_TABLE['Weapon Perks'][current_weapon][perk_name][next_level]
+        if cost > core_object.storage.upgrade_tokens:
+            self.alert_player('Not enough tokens!')
+        else:
+            core_object.storage.upgrade_tokens -= cost
+            core_object.storage.current_weapon_perks[current_weapon][perk_name] = next_level
+            self.replace_stage12_updgrade_ui(current_weapon)
+        self.update_token_count(self.stage)
+            
+    
+    def remove_stage12_upgrade_ui(self):
+        if not self.get_sprite_by_name(12, 'weapon_title'): return
+        self.stages[12].remove(self.get_sprite_by_name(12, 'weapon_title'))
+        upg_sprite : UiSprite
+        for upg_sprite in self.stage_data[12]['upgrade_sprites']:
+            if upg_sprite in self.stages[12]: self.stages[12].remove(upg_sprite)
+        self.stage_data[12]['upgrade_sprites'].clear()
+    
+    def replace_stage12_updgrade_ui(self, new_weapon_name : str):
+        self.remove_stage12_upgrade_ui()
+        self.make_stage12_updgrade_ui(new_weapon_name)
+    
+    def exit_stage12(self):
+        self.remove_stage12_upgrade_ui()
+        self.stage_data[12].clear()
+    
+    def enter_stage13(self, goto_armor_equipped : bool = False):
+        self.stage = 13
+        armor_equipped_index : int = core_object.storage.ALL_ARMORS.index(core_object.storage.armor_equipped) if core_object.storage.armor_equipped else 0
+        current_armor_index : int = armor_equipped_index if goto_armor_equipped else self.stage_data[13].get('armor_index', armor_equipped_index)
+        self.stage_data[13] = {'armor_index' : current_armor_index, 
+                               'all_armors_lentgh' : len(core_object.storage.ALL_ARMORS), 
+                               'current_armor' : core_object.storage.ALL_ARMORS[current_armor_index]}
+        
+        self.replace_stage13_armor_ui(None, self.stage_data[13]['current_armor'])
+        self.update_token_count(self.stage)
+        self.udpdate_stage13_armor_interact()
+    
+    def make_stage13_armor_ui(self, armor_name : str):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        armor_title : UiSprite = BaseUiElements.new_text_sprite(armor_name, (Menu.font_50, 'Black', False), 0, 'midtop', (centerx, 100), name='armor_title')
+        all_base_stats = core_object.storage.BASE_ARMOR_STATS[armor_name]
+        base_stats_paragraph = '\n'.join(['Base Stats:'] + [f'{key} : {all_base_stats[key]}' for key in all_base_stats]) if all_base_stats else ''
+        base_stats : UiSprite = BaseUiElements.new_text_sprite(base_stats_paragraph, (Menu.font_50, 'Black', False), 0, 'topleft', (15, 175), name='base_armor_stats')
+        all_armor_perks = core_object.storage.current_armor_perks[armor_name]
+        armor_perks_paragraph = '\n'.join(['Perks:'] + [core_object.storage.format_perk(key, all_armor_perks[key]) for key in all_armor_perks]) if all_armor_perks else ''
+        armor_perks : UiSprite = BaseUiElements.new_text_sprite(armor_perks_paragraph, (Menu.font_50, 'Black', False), 0, 'topright', (945, 175), name='the_armor_perks')
+        return (armor_title, base_stats, armor_perks)
+    
+    def remove_stage13_armor_ui(self, armor_name : str):
+        if not self.get_sprite_by_name(13, 'armor_title'): return
+        self.stages[13].remove(self.get_sprite_by_name(13, 'armor_title'))
+        self.stages[13].remove(self.get_sprite_by_name(13, 'base_armor_stats'))
+        self.stages[13].remove(self.get_sprite_by_name(13, 'the_armor_perks'))
+
+    def add_stage13_armor_ui(self, armor_name : str):
+        for ui_sprite in self.make_stage13_armor_ui(armor_name):
+            self.stages[13].append(ui_sprite)
+    
+    
+    
+    def replace_stage13_armor_ui(self, old_armor_name : str, armor_name : str):
+        self.remove_stage13_armor_ui(old_armor_name)
+        self.add_stage13_armor_ui(armor_name)
+    
+    def update_stage13_armor_ui(self, armor_name : str):
+        self.remove_stage13_armor_ui(armor_name)
+        self.add_stage13_armor_ui(armor_name)
+    
+    def udpdate_stage13_armor_interact(self):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        new_text : str
+        current_armor : str = self.stage_data[13]['current_armor']
+        if current_armor == core_object.storage.armor_equipped:
+            new_text = 'Unequip'
+            self.get_sprite_by_name(13, 'upgrade_button').visible = True
+        elif current_armor in core_object.storage.owned_armors:
+            new_text = 'Equip'
+            self.get_sprite_by_name(13, 'upgrade_button').visible = True
+        else:
+            new_text = 'Buy'
+            self.get_sprite_by_name(13, 'upgrade_button').visible = False
+        new_sprite : UiSprite = BaseUiElements.new_button('BlueButton', new_text, 1, 'midbottom', (centerx - 90, window_size[1] - 15), (0.4, 1.0), 
+        {'name' : 'armor_interact'}, (Menu.font_40, 'Black', False))
+        self.find_and_replace(new_sprite, 13, name='armor_interact')
+    
+    def exit_stage13(self):
+        self.remove_stage13_armor_ui(self.stage_data[13]['current_armor'])
+        #self.stage_data[13].clear()
+    
+    def enter_stage14(self, armor_name : str):
+        self.stage = 14
+        self.stage_data[14]['armor'] = armor_name
+        self.stage_data[14]['upgrade_sprites'] = []
+        self.update_token_count(self.stage)
+        self.replace_stage14_updgrade_ui(armor_name)
+    
+    def make_stage14_updgrade_ui(self, armor_name : str):
+        window_size = core_object.main_display.get_size()
+        window_x, window_y = window_size
+        centerx = window_size[0] // 2
+        armor_title : UiSprite = BaseUiElements.new_text_sprite(armor_name, (Menu.font_50, 'Black', False), 0, 'midtop', (centerx, 100), name='armor_title')
+
+        for ui_sprite in (armor_title,):
+            self.stages[14].append(ui_sprite)
+        self.make_stage14_upgrade_section(armor_name)
+    
+    def make_stage14_upgrade_section(self, armor_name : str):
+        curr_x : int = 15
+        curr_y : int = 135
+        for perk in core_object.storage.ARMOR_AVAILABLE_PERKS[armor_name]:
+            max_level : int = core_object.storage.ARMOR_AVAILABLE_PERKS[armor_name][perk]
+            current_level : int|None = core_object.storage.current_armor_perks[armor_name].get(perk, None)
+            header_text : str
+            cost_text : str
+            button_text : str = 'Upgrade'
+            if current_level is None:
+                header_text = core_object.storage.format_perk(perk, 1)
+                cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][1]}'
+            elif current_level < max_level:
+                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][current_level + 1]}'
+            else:
+                header_text = core_object.storage.format_perk(perk, current_level)
+                cost_text = f'Cost : MAXED'
+                button_text = 'MAXED'
+            
+            header_sprite = BaseUiElements.new_text_sprite(header_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y))
+            cost_sprite = BaseUiElements.new_text_sprite(cost_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y + 30))
+            button_sprite = BaseUiElements.new_button('BlueButton', button_text, 1, 'topleft', (curr_x, curr_y + 60), (0.4, 1), name=f'upgrade_perk_{perk}')
+            tooltip_sprite = ToolTip(pygame.Vector2(15, 430), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
+                                     header_sprite.rect.unionall([cost_sprite.rect, button_sprite.rect]), text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
+            for ui_sprite in (header_sprite, cost_sprite, button_sprite, tooltip_sprite):
+                self.stages[14].append(ui_sprite)
+                self.stage_data[14]['upgrade_sprites'].append(ui_sprite)
+            
+            curr_y += 165
+    
+    def upgrade_stage14_armor_perk(self, perk_name : str):
+        current_armor : str = self.stage_data[14]['armor']
+        current_level : int|None = core_object.storage.current_armor_perks[current_armor].get(perk_name, None)
+        max_level : int = core_object.storage.ARMOR_AVAILABLE_PERKS[current_armor][perk_name]
+        if current_level:
+            if current_level >= max_level:
+                self.alert_player('This upgrade is already maxed out!')
+                return
+        
+        next_level : int = current_level + 1 if current_level is not None else 1
+        cost : int = core_object.storage.COST_TABLE['Armor Perks'][current_armor][perk_name][next_level]
+        if cost > core_object.storage.upgrade_tokens:
+            self.alert_player('Not enough tokens!')
+        else:
+            core_object.storage.upgrade_tokens -= cost
+            core_object.storage.current_armor_perks[current_armor][perk_name] = next_level
+            self.replace_stage14_updgrade_ui(current_armor)
+        self.update_token_count(self.stage)
+            
+    
+    def remove_stage14_upgrade_ui(self):
+        if not self.get_sprite_by_name(14, 'armor_title'): return
+        self.stages[14].remove(self.get_sprite_by_name(14, 'armor_title'))
+        upg_sprite : UiSprite
+        for upg_sprite in self.stage_data[14]['upgrade_sprites']:
+            if upg_sprite in self.stages[14]: self.stages[14].remove(upg_sprite)
+        self.stage_data[14]['upgrade_sprites'].clear()
+    
+    def replace_stage14_updgrade_ui(self, new_armor_name : str):
+        self.remove_stage14_upgrade_ui()
+        self.make_stage14_updgrade_ui(new_armor_name)
+    
+    def exit_stage14(self):
+        self.remove_stage14_upgrade_ui()
+        self.stage_data[14].clear()
+
+    def goto_stage(self, new_stage : int):
+        self.exit_any_stage()
+        self.enter_any_stage(new_stage)
+    
+    def exit_any_stage(self):
+        if self.stage in self.EXIT_TABLE:
+            self.EXIT_TABLE[self.stage]()
+    
+    def enter_any_stage(self, new_stage : int):
+        if new_stage in self.ENTRY_TABLE:
+            self.ENTRY_TABLE[new_stage]()
+        else:
+            self.stage = new_stage
+
     def update(self, delta : float):
         super().update(delta)
         stage_data = self.stage_data[self.stage]
@@ -515,41 +909,33 @@ Useful for skilled players.''')],
             return
         tag : int = event.tag
         name : str = event.name
+        the_sprite : UiSprite = event.sprite
         trigger_type : str = event.trigger_type
         stage_data = self.stage_data[self.stage]
         match self.stage:
             case 1:
                 if name == "play_button":
-                    self.enter_stage2()
+                    self.goto_stage(2)
                 elif name == "settings_button":
                     self.enter_stage6()
+            
             case 2:
-                if name[:4] == 'buy_':
-                    upg_name = name[4:]
-                    current_level : int = core_object.storage.general_upgrades[upg_name] 
-                    if current_level < 5:
-                        cost : int = core_object.storage.COST_TABLE['General Upgrades'][upg_name][current_level + 1]
-                        if core_object.storage.upgrade_tokens >= cost:
-                            core_object.storage.upgrade_tokens -= cost
-                            core_object.storage.general_upgrades[upg_name] += 1
-                            self.update_general_upgrade_bar(upg_name)
-                            self.update_token_count()
-                        else:
-                            self.alert_player('Not enough tokens!')
-                    else:
-                        self.alert_player('This stat is already maxed!')
-    
-                elif name == 'ready_button':
+                if name == 'ready_button':
                     self.launch_game()
-                
                 elif name == 'back_button':
-                    self.enter_stage1()
-                elif name == 'next_button':
-                    self.enter_stage3()
+                    self.goto_stage(1)
+                elif name == 'shop_button':
+                    self.goto_stage(9)
+                elif name == 'armory_button':
+                    self.goto_stage(10)
+                elif name == 'modify_armor':
+                    self.enter_stage13()
+                elif name == 'modify_weapon':
+                    self.enter_stage11(True)
             
             case 3:
                 if name == 'back_button':
-                    self.enter_stage1()
+                    self.exit_stage3()
                 elif name == 'ready_button':
                     self.launch_game()
                 elif name == 'prev_button':
@@ -585,7 +971,7 @@ Useful for skilled players.''')],
             
             case 5:
                 if name == 'back_button':
-                    self.enter_stage1()
+                    self.exit_stage5()
                 elif name == 'ready_button':
                     self.launch_game()
                 elif name == 'prev_button':
@@ -632,3 +1018,115 @@ Useful for skilled players.''')],
                     core_object.storage.reset()
                     self.exit_stage8()
                     self.alert_player('Data Reset!')
+            
+            case 9:
+                if name == 'back_button':
+                    self.goto_stage(2)
+                
+                elif name == 'weapon_browse':
+                    self.goto_stage(3)
+
+                elif name == 'armor_browse':
+                    self.goto_stage(5)
+            
+            case 10:
+                if name == 'back_button':
+                    self.goto_stage(2)
+                
+                elif name == 'weapon_browse':
+                    self.enter_stage11(True)
+
+                elif name == 'armor_browse':
+                    self.goto_stage(13)
+            
+            case 11:
+                if name == 'back_button':
+                    self.goto_stage(10)
+                
+                elif name == 'prev_button':
+                    self.stage_data[11]['weapon_index'] -= 1
+                    self.stage_data[11]['weapon_index'] %= self.stage_data[11]['all_weapons_lentgh']
+                    new_weapon : str = core_object.storage.ALL_WEAPONS[self.stage_data[11]['weapon_index']]
+                    self.replace_stage11_weapon_ui(self.stage_data[11]['current_weapon'], new_weapon)
+                    self.stage_data[11]['current_weapon'] = new_weapon
+                    self.udpdate_stage11_weapon_interact()
+
+                elif name == 'next_button':
+                    self.stage_data[11]['weapon_index'] += 1
+                    self.stage_data[11]['weapon_index'] %= self.stage_data[11]['all_weapons_lentgh']
+                    new_weapon : str = core_object.storage.ALL_WEAPONS[self.stage_data[11]['weapon_index']]
+                    self.replace_stage11_weapon_ui(self.stage_data[11]['current_weapon'], new_weapon)
+                    self.stage_data[11]['current_weapon'] = new_weapon
+                    self.udpdate_stage11_weapon_interact()
+                
+                elif name == 'weapon_interact':
+                    current_weapon : str = self.stage_data[11]['current_weapon']
+                    if current_weapon == core_object.storage.weapon_equipped:
+                        pass
+                    elif current_weapon in core_object.storage.owned_weapons:
+                        core_object.storage.weapon_equipped = current_weapon
+                        self.udpdate_stage11_weapon_interact()
+                    else:
+                        self.goto_stage(3)
+
+                elif name == 'upgrade_button':
+                    if not the_sprite.visible: return
+                    current_weapon : str = self.stage_data[11]['current_weapon']
+                    if current_weapon in core_object.storage.owned_weapons:
+                        self.exit_stage11()
+                        self.enter_stage12(current_weapon)
+                    else:
+                        self.alert_player('You do not own this weapon!')
+
+
+            case 12:
+                if name == 'back_button':
+                    self.goto_stage(11)
+                elif name[:13] == 'upgrade_perk_':
+                    self.upgrade_stage12_weapon_perk(name[13:])
+
+            case 13:
+                if name == 'back_button':
+                    self.goto_stage(10)
+                
+                elif name == 'prev_button':
+                    self.stage_data[13]['armor_index'] -= 1
+                    self.stage_data[13]['armor_index'] %= self.stage_data[13]['all_armors_lentgh']
+                    new_armor : str = core_object.storage.ALL_ARMORS[self.stage_data[13]['armor_index']]
+                    self.replace_stage13_armor_ui(self.stage_data[13]['current_armor'], new_armor)
+                    self.stage_data[13]['current_armor'] = new_armor
+                    self.udpdate_stage13_armor_interact()
+
+                elif name == 'next_button':
+                    self.stage_data[13]['armor_index'] += 1
+                    self.stage_data[13]['armor_index'] %= self.stage_data[13]['all_armors_lentgh']
+                    new_armor : str = core_object.storage.ALL_ARMORS[self.stage_data[13]['armor_index']]
+                    self.replace_stage13_armor_ui(self.stage_data[13]['current_armor'], new_armor)
+                    self.stage_data[13]['current_armor'] = new_armor
+                    self.udpdate_stage13_armor_interact()
+                
+                elif name == 'armor_interact':
+                    current_armor : str = self.stage_data[13]['current_armor']
+                    if current_armor == core_object.storage.armor_equipped:
+                        core_object.storage.armor_equipped = None
+                        self.udpdate_stage13_armor_interact()
+                    elif current_armor in core_object.storage.owned_armors:
+                        core_object.storage.armor_equipped = current_armor
+                        self.udpdate_stage13_armor_interact()
+                    else:
+                        self.goto_stage(5)
+                
+                elif name == 'upgrade_button':
+                    if not the_sprite.visible: return
+                    current_armor : str = self.stage_data[13]['current_armor']
+                    if current_armor in core_object.storage.owned_armors:
+                        self.exit_stage13()
+                        self.enter_stage14(current_armor)
+                    else:
+                        self.alert_player('You do not own this armor!')
+
+            case 14:
+                if name == 'back_button':
+                    self.goto_stage(13)
+                elif name[:13] == 'upgrade_perk_':
+                    self.upgrade_stage14_armor_perk(name[13:])

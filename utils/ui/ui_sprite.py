@@ -179,7 +179,7 @@ class UiSprite:
     def on_click(self):
         if not self.clickable: return
         if not self.interactible: return
-        attributes = {"tag" : self.tag, "name" : self.name, 'trigger_type' : 'click'}
+        attributes = {"tag" : self.tag, "name" : self.name, 'trigger_type' : 'click', 'sprite' : self}
         event = pygame.event.Event(UiSprite.TAG_EVENT, attributes)
         pygame.event.post(event)
     
