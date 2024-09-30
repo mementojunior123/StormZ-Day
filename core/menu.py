@@ -570,7 +570,7 @@ Useful for skilled players.''')],
         if not old_stage: old_stage = 1
         if old_stage == 8: old_stage = 1
         self.stage_data[8].clear()
-        self.goto_stage(old_stage)
+        self.enter_any_stage(old_stage)
 
     def enter_stage9(self):
         self.stage = 9
