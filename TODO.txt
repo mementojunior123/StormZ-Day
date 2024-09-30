@@ -7,11 +7,10 @@ Basic outline:
 
 Priority list:
 ---High---
--Make the upgrades associated to weapons/armors so that the player actually has stuff to buy.
--Revamp the menu to accomodate for these changes. (See menu_flowchart2.png)
+-Make a reverse link between stage 2 modify buttons and the armory sub-menus.
 -Do more game balancing.
 ---Medium---
--Add a perk system.
+-Add unique perks.
 -Find more assets for backgrounds, the player, zombies and bullets.
 -Add more sounds and music.
 ---Low---
@@ -25,6 +24,8 @@ Priority list:
 -Mobile support. (Partially Implmented)
 
 ---Done---
+-Make the upgrades associated to weapons/armors so that the player actually has stuff to buy. (Implmented)
+Revamp the menu to accomodate for these changes. (See menu_flowchart2.png) (Implmented)
 -Add some sort of auto-aim or aiming with WASD to help trackpad players. (Implmented)
 -Implement aim assist. (Implmented)
 -Implement saving between sessions. (Implmented)
