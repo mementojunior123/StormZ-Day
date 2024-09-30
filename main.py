@@ -41,7 +41,7 @@ async def main():
         core.menu.enter_stage1()
     else:
         core.menu.stage = 7
-    if core.IS_DEBUG: core.storage.upgrade_tokens = 30
+    if core.IS_DEBUG: core.storage.upgrade_tokens = 999
     core.set_brightness(core.settings.info['Brightness'])
     while 1:
         core.update_dt(60)

@@ -256,7 +256,7 @@ ARMORS : dict[str, BaseArmor] = {
     None : None,
     'Light' : BaseArmor(ArmorStats(0.6, 2, (2 / 2), 2), (7/7)),
     'Balanced' : BaseArmor(ArmorStats(0.75, 5, (5/4), 3), (6/7)),
-    'Heavy' : BaseArmor(ArmorStats(0.9, 8, (6/8), 5), (5/7), True),
+    'Heavy' : BaseArmor(ArmorStats(0.9, 8, (8/6), 5), (5/7), True),
     'Adaptative' : BaseArmor(ArmorStats(1, 2, (2 / 4), 2), (7/7), True)
 
 }

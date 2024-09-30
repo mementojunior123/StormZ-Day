@@ -5,7 +5,7 @@ from random import random
 from collections import OrderedDict
 
 def to_roman(num : int) -> str:
-
+    if num == 0: return '0'
     roman = OrderedDict()
     roman[1000] = "M"
     roman[900] = "CM"

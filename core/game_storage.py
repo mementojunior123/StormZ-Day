@@ -8,33 +8,33 @@ if PLATFORM == 'emscripten':
 ALL_WEAPONS : list[str] = ['Pistol', 'Rifle', 'Shotgun', 'Piercer']
 
 BASE_WEAPON_STATS : dict[str, dict[str, float|str]] = {
-    'Pistol' : {'Damage' : 2, 'Firerate' : 2,},
-    'Rifle' : {'Damage' : 2, 'Firerate' : 2,},
-    'Shotgun' : {'Damage' : 2, 'Firerate' : 2,},
-    'Piercer' : {'Damage' : 2, 'Firerate' : 2,}
+    'Pistol' : {'Damage' : 5, 'Firerate' : 3},
+    'Rifle' : {'Damage' : 3, 'Firerate' : 5},
+    'Shotgun' : {'Damage' : '3x5', 'Firerate' : 2},
+    'Piercer' : {'Damage' : 7, 'Firerate' : 2.5}
 }
 
 WEAPON_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
     'Pistol' : {'Firerate' : 5, 'Damage' : 5},
     'Rifle' : {'Firerate' : 5, 'Damage' : 5},
     'Shotgun' : {'Firerate' : 5, 'Damage' : 5},
-    'Piercer' : {'Firerate' : 5, 'Damage' : 5}
+    'Piercer' : {'Firerate' : 5, 'Damage' : 5, 'Ultra-Peirce' : 3}
 }
 
 WEAPON_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
     'Pistol' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
     'Rifle' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
     'Shotgun' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
-    'Piercer' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]}
+    'Piercer' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50], 'Ultra-Peirce' : [0, 10, 25, 50]}
 }
 
 ALL_ARMORS : list[str] = ['Light', 'Balanced', 'Heavy', 'Adaptative']
 
 BASE_ARMOR_STATS : dict[str, dict[str, float|str]] = {
-    'Light' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Speed' : 1},
-    'Balanced' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Speed' : 1},
-    'Heavy' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Speed' : 1},
-    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Speed' : 1},
+    'Light' : {'Health' : 2, 'Resistance' : '60%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '2s'},
+    'Balanced' : {'Health' : 5, 'Resistance' : '75%', 'Regeneration Cooldown' : 3, 'Regeneration Time' : '4s'},
+    'Heavy' : {'Health' : 8, 'Resistance' : '90%', 'Regeneration Cooldown' : 5, 'Regeneration Time' : '6s'},
+    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '4s'},
 }
 
 ARMOR_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
@@ -65,13 +65,15 @@ PERK_FORMATTING_TABLE : dict[str, str] = {
     'Damage' : 'Roman',
     'Sharpshooter' : 'Plus',
     'Vitality' : 'Roman',
+    'Ultra-Peirce' : 'Plus'
 }
 
 PERK_TOOLTIP_TABLE : dict[str, str] = {
     'Firerate' : 'Increases firerate by 20% per stack.',
     'Damage' : 'Increases damage by 20% per stack.',
     'Vitality' : 'Increases player health by 20% per stack.',
-    'Sharpshooter' : '???'
+    'Sharpshooter' : '???',
+    'Ultra-Peirce' : '???'
 }
 
 class GameStorage:

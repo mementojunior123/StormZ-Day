@@ -3,10 +3,11 @@
     "owned_armors" : [
         "Light"
     ], 
-    "weapon_equipped" : "Rifle", 
+    "weapon_equipped" : "Piercer", 
     "owned_weapons" : [
         "Pistol", 
-        "Rifle"
+        "Rifle", 
+        "Piercer"
     ], 
     "current_weapon_perks" : {
         "Pistol" : {
@@ -17,11 +18,14 @@
             "Damage" : 1
         }, 
         "Shotgun" : {}, 
-        "Piercer" : {}
+        "Piercer" : {
+            "Ultra-Peirce" : 3, 
+            "Firerate" : 1
+        }
     }, 
     "current_armor_perks" : {
         "Light" : {
-            "Vitality" : 1
+            "Vitality" : 5
         }, 
         "Balanced" : {}, 
         "Heavy" : {}, 
@@ -29,6 +33,6 @@
     }, 
     "highscore" : 1, 
     "highest_wave" : 1, 
-    "tokens" : 25, 
+    "tokens" : 889, 
     "isvalid" : 2
 }

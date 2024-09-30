@@ -53,7 +53,7 @@ class BaseUiElements:
     @classmethod
     def new_text_sprite(cls, text : str, settings : tuple, tag : int, alignment : str, pos : tuple, 
                         attributes = None, newline_settings = None, keep_og_surf : bool = False, forced_og_surf : pygame.Surface|None= None,
-                        name : str|None = None, scale : float|tuple = 1):
+                        name : str|None = None, scale : float|tuple = 1, wraplen : int = 0):
         """
         Returns an UiSprite.
         Settings is a tuple of (font, color, AA).
@@ -67,7 +67,7 @@ class BaseUiElements:
         if newline_settings is None:
 
             
-            surf = font.render(text, AA_enabled, color).convert_alpha()
+            surf = font.render(text, AA_enabled, color, wraplength=wraplen).convert_alpha()
             surf = pygame.transform.scale_by(surf, scale)
             rect = surf.get_bounding_rect()
             rect.__setattr__(alignment, pos)

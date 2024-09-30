@@ -667,7 +667,7 @@ Useful for skilled players.''')],
     
     def make_stage12_upgrade_section(self, weapon_name : str):
         curr_x : int = 15
-        curr_y : int = 135
+        curr_y : int = 142
         for perk in core_object.storage.WEAPON_AVAILABLE_PERKS[weapon_name]:
             max_level : int = core_object.storage.WEAPON_AVAILABLE_PERKS[weapon_name][perk]
             current_level : int|None = core_object.storage.current_weapon_perks[weapon_name].get(perk, None)
@@ -678,7 +678,8 @@ Useful for skilled players.''')],
                 header_text = core_object.storage.format_perk(perk, 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][1]}'
             elif current_level < max_level:
-                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                #header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                header_text = core_object.storage.format_perk(perk, current_level + 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][current_level + 1]}'
             else:
                 header_text = core_object.storage.format_perk(perk, current_level)
@@ -688,13 +689,16 @@ Useful for skilled players.''')],
             header_sprite = BaseUiElements.new_text_sprite(header_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y))
             cost_sprite = BaseUiElements.new_text_sprite(cost_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y + 30))
             button_sprite = BaseUiElements.new_button('BlueButton', button_text, 1, 'topleft', (curr_x, curr_y + 60), (0.4, 1), name=f'upgrade_perk_{perk}')
-            tooltip_sprite = ToolTip(pygame.Vector2(15, 430), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
+            tooltip_sprite = ToolTip(pygame.Vector2(15, 440), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
                                      header_sprite.rect.unionall([cost_sprite.rect, button_sprite.rect]), text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
             for ui_sprite in (header_sprite, cost_sprite, button_sprite, tooltip_sprite):
                 self.stages[12].append(ui_sprite)
                 self.stage_data[12]['upgrade_sprites'].append(ui_sprite)
             
             curr_y += 165
+            if curr_y > 400:
+                curr_y = 142
+                curr_x += 225
     
     def upgrade_stage12_weapon_perk(self, perk_name : str):
         current_weapon : str = self.stage_data[12]['weapon']
@@ -819,7 +823,7 @@ Useful for skilled players.''')],
     
     def make_stage14_upgrade_section(self, armor_name : str):
         curr_x : int = 15
-        curr_y : int = 135
+        curr_y : int = 150
         for perk in core_object.storage.ARMOR_AVAILABLE_PERKS[armor_name]:
             max_level : int = core_object.storage.ARMOR_AVAILABLE_PERKS[armor_name][perk]
             current_level : int|None = core_object.storage.current_armor_perks[armor_name].get(perk, None)
@@ -830,7 +834,8 @@ Useful for skilled players.''')],
                 header_text = core_object.storage.format_perk(perk, 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][1]}'
             elif current_level < max_level:
-                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                #header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                header_text = core_object.storage.format_perk(perk, current_level + 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][current_level + 1]}'
             else:
                 header_text = core_object.storage.format_perk(perk, current_level)
@@ -840,13 +845,16 @@ Useful for skilled players.''')],
             header_sprite = BaseUiElements.new_text_sprite(header_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y))
             cost_sprite = BaseUiElements.new_text_sprite(cost_text, (Menu.font_50, 'Black', False), 0, 'topleft', (curr_x, curr_y + 30))
             button_sprite = BaseUiElements.new_button('BlueButton', button_text, 1, 'topleft', (curr_x, curr_y + 60), (0.4, 1), name=f'upgrade_perk_{perk}')
-            tooltip_sprite = ToolTip(pygame.Vector2(15, 430), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
+            tooltip_sprite = ToolTip(pygame.Vector2(15, 440), 'topleft', 0, core_object.storage.PERK_TOOLTIP_TABLE[perk], 
                                      header_sprite.rect.unionall([cost_sprite.rect, button_sprite.rect]), text_settings=(Menu.font_50, 'Black', False), colorkey=[0, 255, 0])
             for ui_sprite in (header_sprite, cost_sprite, button_sprite, tooltip_sprite):
                 self.stages[14].append(ui_sprite)
                 self.stage_data[14]['upgrade_sprites'].append(ui_sprite)
             
             curr_y += 165
+            if curr_y > 500:
+                curr_y = 150
+                curr_x += 225
     
     def upgrade_stage14_armor_perk(self, perk_name : str):
         current_armor : str = self.stage_data[14]['armor']
