@@ -160,8 +160,7 @@ class Player(Sprite):
         element.zindex = 50
 
         element.pivot = Pivot2D(element._position, element.image, (0, 0, 255))
-
-        element.max_hp = 5 #* (1 + core_object.storage.general_upgrades['Vitality'] * 0.2)
+        element.max_hp = 5 
         element.hp = element.max_hp
         
         use_debug_weapon = 'debug' if (pygame.key.get_pressed()[pygame.K_o]) and core_object.IS_DEBUG else False
@@ -169,14 +168,18 @@ class Player(Sprite):
         element.weapon.get_game_source()
 
         element.weapon.stats.reset()
-        #element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.firerate_mult, 0.2 * core_object.storage.general_upgrades['Firerate']))
-        #element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.dmg_mult, 0.2 * core_object.storage.general_upgrades['Damage']))
+        firerate_level : int = core_object.storage.current_weapon_perks[core_object.storage.weapon_equipped].get('Firerate', 0)
+        damage_level : int = core_object.storage.current_weapon_perks[core_object.storage.weapon_equipped].get('Damage', 0)
+        element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.firerate_mult, 0.2 * firerate_level))
+        element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.dmg_mult, 0.2 * damage_level))
         element.weapon.ready_shot_cooldown()
 
         element.armor = ARMORS[core_object.storage.armor_equipped]
         if element.armor:
             element.armor.get_game_source()
             element.armor.stats.reset()
+            element.max_hp *= (1 + core_object.storage.current_armor_perks[core_object.storage.armor_equipped].get('Vitality', 0) * 0.2)
+            element.hp = element.max_hp
 
         bar_image = make_upgrade_bar(150, 25, 1)
         element.ui_healthbar = UiSprite(bar_image, bar_image.get_rect(topright = (950, 20)), 0, 'healthbar')

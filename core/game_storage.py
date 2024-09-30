@@ -25,7 +25,7 @@ WEAPON_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
     'Pistol' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
     'Rifle' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
     'Shotgun' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
-    'Piercer' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50], 'Ultra-Peirce' : [0, 10, 25, 50]}
+    'Piercer' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]}
 }
 
 ALL_ARMORS : list[str] = ['Light', 'Balanced', 'Heavy', 'Adaptative']
