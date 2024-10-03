@@ -7,7 +7,7 @@ from utils.pivot_2d import Pivot2D
 
 from game.projectiles import BaseProjectile
 from game.enemy import BaseZombie
-from utils.helpers import make_upgrade_bar, reset_upgrade_bar, load_alpha_to_colorkey, make_circle, closest_point
+from utils.helpers import make_upgrade_bar, reset_upgrade_bar, load_alpha_to_colorkey, make_circle, closest_point, make_right_arrow
 from utils.ui.ui_sprite import UiSprite
 from utils.my_timer import Timer
 from dataclasses import dataclass
@@ -121,6 +121,9 @@ class Player(Sprite):
 
         self.main_heart : UiSprite|None = None
         self.ui_healthbar : UiSprite|None = None
+        self.ui_aim_arrow : UiSprite|None = None
+        self.current_aim_arrow_orientation : pygame.Vector2|None = None
+        self.last_arrow_press_timer : Timer|None = None
         self.armor_healthbar : UiSprite|None = None
         self.weapon : BaseWeapon
         self.armor : BaseArmor|None
@@ -145,6 +148,7 @@ class Player(Sprite):
 
         element.current_direction = pygame.Vector2(0,0)
         element.last_shot_direction = pygame.Vector2(1,0)
+        element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
             amplitude = 60
             element.joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
@@ -192,7 +196,8 @@ class Player(Sprite):
             element.update_armor_healthbar()
         element.main_heart = UiSprite(Player.ui_heart_image, Player.ui_heart_image.get_rect(topright = (793, 15)), 
                                       0, f'heart', colorkey=[0, 255, 0], zindex=1)
-        #core_object.main_ui.add(element.main_heart)
+        element.ui_aim_arrow = None
+        element.current_aim_arrow_orientation = pygame.Vector2(0,0)
         return element
     
     def update(self, delta: float):
@@ -204,6 +209,34 @@ class Player(Sprite):
         self.do_collisions()
         if self.armor: self.armor.update(delta)
         self.update_healthbars()
+        self.update_aim_arrow()
+
+    def update_aim_arrow(self):
+        if core_object.settings.info['ControlMethod'] == 'Mobile': return
+        arrow_vec : pygame.Vector2 = self.get_arrow_map_direction()
+        aim_arrow : UiSprite|None = self.ui_aim_arrow
+        if arrow_vec.magnitude() != 0:
+            self.current_aim_arrow_orientation = arrow_vec
+        elif self.last_arrow_press_timer.isover():
+            self.current_aim_arrow_orientation = pygame.Vector2(0,0)
+
+        if aim_arrow: core_object.main_ui.remove(aim_arrow)
+        if self.current_aim_arrow_orientation.magnitude() <= 0: return
+
+
+        arrow_dir = self.current_aim_arrow_orientation
+        surf : pygame.Surface = make_right_arrow(20, 20)
+        offset : pygame.Vector2 = pygame.Vector2(50, 0)
+        angle : float = arrow_dir.angle_to(pygame.Vector2(1, 0))
+
+        surf = pygame.transform.rotate(surf, angle)
+        offset.rotate_ip(-angle)
+        rect : pygame.Rect = surf.get_rect(center = round(self.position + offset))
+
+        new_aim_arrow : UiSprite = UiSprite(surf, rect, 0, 'aim_arrow', zindex=20)
+        core_object.main_ui.add(new_aim_arrow)
+        self.ui_aim_arrow = new_aim_arrow
+
     
     def get_movement_vector(self) -> pygame.Vector2:
         control_scheme : str = core_object.settings.info['ControlMethod']
@@ -262,6 +295,8 @@ class Player(Sprite):
         if not any_press:
             for key in KEYS:
                 self.arrow_map[key] = False
+        else:
+            self.last_arrow_press_timer.set_duration(0.15)
     
     def get_arrow_map_direction(self) -> pygame.Vector2:
         move_vector : pygame.Vector2 = pygame.Vector2(0,0)
@@ -390,7 +425,7 @@ class Player(Sprite):
                 closest_enemy_direction = player_to_zomb_vec
         
         if not enemy: return shot_direction
-        if closest_angle <= 0.8 or closest_angle >= 22.5: return shot_direction
+        if closest_angle <= 0.8 or closest_angle >= 17.5: return shot_direction
         return closest_enemy_direction
 
 
@@ -480,6 +515,7 @@ class Player(Sprite):
         super().clean_instance()
 
         self.current_direction = None
+        self.current_aim_arrow_orientation = None
         self.last_shot_direction = None
         self.joystick = None
         self.finger_id_stack = None
@@ -492,6 +528,8 @@ class Player(Sprite):
 
         self.main_heart = None
         self.ui_healthbar = None
+        self.last_arrow_press_timer = None
+        self.ui_aim_arrow = None
     
 
 Sprite.register_class(Player)
