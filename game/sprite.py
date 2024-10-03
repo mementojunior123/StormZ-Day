@@ -4,6 +4,7 @@ from typing import Any
 from utils.helpers import is_sorted
 from utils.pivot_2d import Pivot2D
 from inspect import isclass
+from utils.raycaster import RayCastMask
 
 class Sprite:
     '''Base class for all game objects.'''
@@ -282,6 +283,14 @@ class Sprite:
 
     def is_collding_rect(self, other : 'Sprite'):
         return self.rect.colliderect(other.rect)
+    
+    def is_colliding_ray(self, ray : RayCastMask):
+        if not self.rect.colliderect(ray.rect): return False
+        return self.mask.overlap(ray.mask, pygame.Vector2(ray.rect.topleft) - self.rect.topleft)
+    
+    def is_colliding_ray_rect(self, ray : RayCastMask):
+        if not self.rect.colliderect(ray.rect): return False
+        return ray.collide_rect(self.rect)
 
     def get_colliding(self, collision_groups : list[list['Sprite']]):
         '''Returns the first sprite colliding this sprite within collision_group or None if there arent any. Uses mask collision.'''

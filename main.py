@@ -15,7 +15,7 @@ pygame.display.set_caption(GAME_TITLE)
 from core.core import Core, core_object
 core = core_object
 core.init(window)
-core.FPS = 120
+core.FPS = 600
 if core.is_web(): core.setup_web(1)
 core._hints()
 

@@ -26,7 +26,7 @@ class Core:
     CORE_EVENT = pygame.event.custom_type()
     START_GAME = pygame.event.custom_type()
     END_GAME = pygame.event.custom_type()
-    IS_DEBUG : bool = False
+    IS_DEBUG : bool = True
     def __init__(self) -> None:
         self.FPS = 60
         self.PERFORMANCE_MODE = False

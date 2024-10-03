@@ -1,5 +1,5 @@
 import pygame
-from game.sprite import Sprite
+from game.sprite import Sprite, RayCastMask
 from core.core import core_object
 
 from utils.animation import Animation
@@ -113,7 +113,7 @@ class Player(Sprite):
 
     fast_shot_sfx = pygame.mixer.Sound('assets/audio/fast_shot.ogg')
     fast_shot_sfx.set_volume(0.10)
-
+    RAY_OFFSET : pygame.Vector2 = (-200, 100)
     def __init__(self) -> None:
         super().__init__()
         self.max_hp : int
@@ -132,6 +132,7 @@ class Player(Sprite):
         self.finger_id_stack : list[int]|None
         self.arrow_map : dict[int, Timer|bool]|None
 
+        self.debug_ray : bool = False
         self.dynamic_mask = True
         Player.inactive_elements.append(self)
 
@@ -194,6 +195,7 @@ class Player(Sprite):
         element.main_heart = UiSprite(Player.ui_heart_image, Player.ui_heart_image.get_rect(topright = (793, 15)), 
                                       0, f'heart', colorkey=[0, 255, 0], zindex=1)
         #core_object.main_ui.add(element.main_heart)
+        element.debug_ray = False
         return element
     
     def update(self, delta: float):
@@ -314,6 +316,15 @@ class Player(Sprite):
             if not bullet.is_hostile('Friendly'): continue
             self.take_damage(bullet.damage)
             bullet.when_hit()
+        self.debug_ray = False
+        return
+        ray : RayCastMask = RayCastMask.from_ray_ignore_points(self.position.copy(), self.position + self.RAY_OFFSET)
+        for enemy in sorted(BaseZombie.active_elements, key = lambda e : (e.position - self.position).magnitude()):
+            #continue
+            if enemy._zombie: continue
+            if enemy.is_dying: continue
+            if enemy.is_colliding_ray(ray):
+                self.debug_ray = True
 
     
     def is_alive(self) -> bool:
@@ -394,6 +405,9 @@ class Player(Sprite):
         if closest_angle <= 0.8 or closest_angle >= 22.5: return shot_direction
         return closest_enemy_direction
 
+    def draw(self, display: pygame.Surface) -> None:
+        super().draw(display)
+        pygame.draw.line(display, 'Red' if self.debug_ray else 'Yellow', self.position.copy(), self.position + self.RAY_OFFSET, width=3)
 
     def update_healthbar(self):
         hp_percent : float = self.hp / self.max_hp
@@ -493,6 +507,7 @@ class Player(Sprite):
 
         self.main_heart = None
         self.ui_healthbar = None
+        self.debug_ray = False
     
 
 Sprite.register_class(Player)
