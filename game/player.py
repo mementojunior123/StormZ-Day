@@ -113,7 +113,7 @@ class Player(Sprite):
 
     fast_shot_sfx = pygame.mixer.Sound('assets/audio/fast_shot.ogg')
     fast_shot_sfx.set_volume(0.10)
-    RAY_OFFSET : pygame.Vector2 = (-200, 100)
+    RAY_OFFSET : pygame.Vector2 = (-800, 100)
     def __init__(self) -> None:
         super().__init__()
         self.max_hp : int
@@ -317,10 +317,9 @@ class Player(Sprite):
             self.take_damage(bullet.damage)
             bullet.when_hit()
         self.debug_ray = False
-        return
+        #return
         ray : RayCastMask = RayCastMask.from_ray_ignore_points(self.position.copy(), self.position + self.RAY_OFFSET)
         for enemy in sorted(BaseZombie.active_elements, key = lambda e : (e.position - self.position).magnitude()):
-            #continue
             if enemy._zombie: continue
             if enemy.is_dying: continue
             if enemy.is_colliding_ray(ray):
