@@ -150,11 +150,10 @@ class Player(Sprite):
             amplitude = 60
             element.joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
             element.finger_id_stack = []
-            element.arrow_map = None
         else:
             element.joystick = None
             element.finger_id_stack = None
-            element.arrow_map = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_LEFT : False, pygame.K_RIGHT : False}
+        element.arrow_map = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_LEFT : False, pygame.K_RIGHT : False}
 
         element.position = new_pos
         element.align_rect()
