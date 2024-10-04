@@ -15,19 +15,19 @@ class RayCastMask:
         offset = get_offset(ray_start, ray_end)
         for point in points:
             mask.set_at((point[0] - offset[0], point[1] - offset[1]))
-        return RayCastMask(mask, points, rect)
+        return RayCastMask(mask, points, rect, ray_start, ray_end)
     
     @staticmethod
     def from_ray_ignore_points(ray_start : Vector2, ray_end : Vector2) -> 'RayCastMask':
         delta : Vector2 = ray_end - ray_start
         rect : pygame.Rect = pygame.Rect(1,1,1,1)
-        rect.size = (abs(ceil(delta.x)), abs(ceil(delta.y))) 
+        rect.size = (abs(round(delta.x)), abs(round(delta.y))) 
         rect.topleft = (round(min(ray_start.x, ray_end.x)), round(min(ray_start.y, ray_end.y)))
-        mask : pygame.Mask = pygame.Mask((rect.size[0] + 1, rect.size[1] + 1))
+        mask : pygame.Mask = pygame.Mask((rect.size[0] + 2, rect.size[1] + 2))
         offset = get_offset(ray_start, ray_end)
         for point in get_points_gen(ray_start, ray_end):
             mask.set_at((point[0] - offset[0], point[1] - offset[1]))
-        return RayCastMask(mask, None, rect)
+        return RayCastMask(mask, None, rect, ray_start, ray_end)
     
     @staticmethod
     def from_ray_surf(ray_start : Vector2, ray_end : Vector2) -> 'RayCastMask':
@@ -42,10 +42,12 @@ class RayCastMask:
         pygame.draw.line(surf, 'White', ray_start - offset, ray_end - offset)
         surf.set_colorkey([0,0,0])
         mask : pygame.Mask = pygame.mask.from_surface(surf)
-        return RayCastMask(mask, None, rect)
+        return RayCastMask(mask, None, rect, ray_start, ray_end)
 
 
-    def __init__(self, mask : pygame.Mask, points : list[tuple[int, int]], rect : pygame.Rect) -> None:
+    def __init__(self, mask : pygame.Mask, points : list[tuple[int, int]]|None, rect : pygame.Rect, start : pygame.Vector2, end : pygame.Vector2) -> None:
+        self.start : pygame.Vector2 = start
+        self.end : pygame.Vector2 = end
         self.mask : pygame.Mask = mask
         self.points : list[tuple[int, int]]|None = points
         self.rect : pygame.Rect = rect
@@ -61,10 +63,10 @@ class RayCastMask:
 def half_normaize(vec : Vector2) -> Vector2:
     if vec.x == vec.y:
         return vec.normalize()
-    elif vec.x > vec.y:
-        return vec / vec.x
+    elif abs(vec.x) > abs(vec.y):
+        return vec / abs(vec.x)
     else:
-        return vec / vec.y
+        return vec / abs(vec.y)
 
 def get_points(ray_start : Vector2, ray_end : Vector2) -> list[tuple[int, int]]:
     ray_offset : Vector2 = ray_end - ray_start
@@ -94,7 +96,7 @@ def get_points_gen(ray_start : Vector2, ray_end : Vector2) -> Generator[tuple[in
     target_y : int
     current_pos : Vector2 = ray_start.copy()
 
-    axis = 0 if ray_normal.x > ray_normal.y else 1
+    axis = 0 if abs(ray_normal.x) > abs(ray_normal.y) else 1
     max_iter : int = ceil(get_max(ray_start, ray_end)[axis] - get_offset(ray_start, ray_end)[axis])
     for i in range(max_iter):
         target_x = round(current_pos.x)

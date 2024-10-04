@@ -132,7 +132,7 @@ class Player(Sprite):
         self.finger_id_stack : list[int]|None
         self.arrow_map : dict[int, Timer|bool]|None
 
-        self.debug_ray : bool = False
+        self.debug_ray : tuple[bool|RayCastMask|None] = False
         self.dynamic_mask = True
         Player.inactive_elements.append(self)
 
@@ -160,7 +160,7 @@ class Player(Sprite):
         element.zindex = 50
 
         element.pivot = Pivot2D(element._position, element.image, (0, 0, 255))
-        element.max_hp = 5 
+        element.max_hp = 5 +999
         element.hp = element.max_hp
         
         use_debug_weapon = 'debug' if (pygame.key.get_pressed()[pygame.K_o]) and core_object.IS_DEBUG else False
@@ -315,14 +315,16 @@ class Player(Sprite):
             if not bullet.is_hostile('Friendly'): continue
             self.take_damage(bullet.damage)
             bullet.when_hit()
-        self.debug_ray = False
         #return
+        self.RAY_OFFSET = pygame.mouse.get_pos() - self.position
         ray : RayCastMask = RayCastMask.from_ray_ignore_points(self.position.copy(), self.position + self.RAY_OFFSET)
+        self.debug_ray = (False, ray)
         for enemy in sorted(BaseZombie.active_elements, key = lambda e : (e.position - self.position).magnitude()):
             if enemy._zombie: continue
             if enemy.is_dying: continue
             if enemy.is_colliding_ray(ray):
-                self.debug_ray = True
+                self.debug_ray = (True, ray)
+                break
 
     
     def is_alive(self) -> bool:
@@ -405,7 +407,10 @@ class Player(Sprite):
 
     def draw(self, display: pygame.Surface) -> None:
         super().draw(display)
-        pygame.draw.line(display, 'Red' if self.debug_ray else 'Yellow', self.position.copy(), self.position + self.RAY_OFFSET, width=3)
+        pygame.draw.line(display, 'Red' if self.debug_ray[0] else 'Yellow', round(self.position), round(self.position + self.RAY_OFFSET), width=1)
+        pygame.draw.rect(display, 'Blue', self.debug_ray[1].rect, 1)
+        #mask_surf : pygame.Surface = self.debug_ray[1].mask.to_surface()
+        #display.blit(mask_surf, self.debug_ray[1].rect)
 
     def update_healthbar(self):
         hp_percent : float = self.hp / self.max_hp
@@ -505,7 +510,7 @@ class Player(Sprite):
 
         self.main_heart = None
         self.ui_healthbar = None
-        self.debug_ray = False
+        self.debug_ray = (False, None)
     
 
 Sprite.register_class(Player)
