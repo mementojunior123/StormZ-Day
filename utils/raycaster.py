@@ -53,8 +53,7 @@ class RayCastMask:
         self.rect : pygame.Rect = rect
     
     def collide_rect(self, other_rect : pygame.Rect) -> bool:
-        for point in self.points:
-            if other_rect.collidepoint(point): return True
+        if other_rect.clipline(self.start, self.end): return True
         return False
     
     def collide_mask(self, other_mask : pygame.Mask, other_offset : pygame.Vector2|tuple[int, int]) -> bool:
