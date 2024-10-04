@@ -7,8 +7,12 @@ Basic outline:
 
 Priority list:
 ---High---
-
+-Make a setting for joystick size (it's too small)
 -Do more game balancing.
+1.Make the enemy projectiles more clear in mutiple areas 
+2.Nerf the shotgun 
+3.Buff the piercer 
+4.Reduce the amount of enemy spawns and buff individual enemies
 ---Medium---
 -Add unique perks.
 -Find more assets for backgrounds, the player, zombies and bullets.
