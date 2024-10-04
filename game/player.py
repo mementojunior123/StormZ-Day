@@ -150,7 +150,7 @@ class Player(Sprite):
         element.last_shot_direction = pygame.Vector2(1,0)
         element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
-            amplitude = 60
+            amplitude = 90
             element.joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
             element.finger_id_stack = []
         else:
