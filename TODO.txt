@@ -7,7 +7,7 @@ Basic outline:
 
 Priority list:
 ---High---
--Make a reverse link between stage 2 modify buttons and the armory sub-menus.
+
 -Do more game balancing.
 ---Medium---
 -Add unique perks.
@@ -19,11 +19,13 @@ Priority list:
 
 
 ---Partially Done---
--Disambiguate between the 'Ready' button and the 'Next' button. (In Progress)
--Implement settings. (Partially Implmented)
 -Mobile support. (Partially Implmented)
+-Implement settings. (Partially Implmented)
+
 
 ---Done---
+-Disambiguate between the 'Ready' button and the 'Next' button. (Done)
+-Make a reverse link between stage 2 modify buttons and the armory sub-menus. (Done)
 -Make the upgrades associated to weapons/armors so that the player actually has stuff to buy. (Implmented)
 Revamp the menu to accomodate for these changes. (See menu_flowchart2.png) (Implmented)
 -Add some sort of auto-aim or aiming with WASD to help trackpad players. (Implmented)

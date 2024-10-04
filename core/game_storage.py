@@ -76,6 +76,19 @@ PERK_TOOLTIP_TABLE : dict[str, str] = {
     'Ultra-Peirce' : '???'
 }
 
+WEAPON_TOOLTIP_TABLE : dict[str, str] = {
+    'Pistol' : 'A budget starting weapon.',
+    'Rifle' : 'Shoots quickly.',
+    'Shotgun' : 'Shoots multiple pellets at once, dealing big damage.',
+    'Piercer' : 'Bullets go trough enemies. Useful when enemies start to stack.'
+}
+ARMOR_TOOLTIP_TABLE : dict[str, str] = {
+    'Light' : 'Offers decent protection and keeps you moving fast.',
+    'Balanced' : 'The best of both worlds.',
+    'Heavy' : 'Makes you much more tanky, at the cost of your speed.',
+    'Adaptative' : 'Completely negates all damage while active, but falls apart\nvery quickly if you get overwhelmed.\nUseful for skilled players.'
+
+}
 class GameStorage:
 
     @staticmethod
@@ -102,6 +115,8 @@ class GameStorage:
         self.BASE_ARMOR_STATS = BASE_ARMOR_STATS
         self.PERK_FORMATTING_TABLE : dict[str, str] = PERK_FORMATTING_TABLE
         self.PERK_TOOLTIP_TABLE = PERK_TOOLTIP_TABLE
+        self.WEAPON_TOOLTIP_TABLE = WEAPON_TOOLTIP_TABLE
+        self.ARMOR_TOOLTIP_TABLE = ARMOR_TOOLTIP_TABLE
         self.COST_TABLE : dict[str, int|dict[str, list[int]]] = COST_TABLE
         self.BASE_WEAPON_STATS = BASE_WEAPON_STATS
 
