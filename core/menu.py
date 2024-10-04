@@ -583,7 +583,7 @@ Useful for skilled players.''')],
         self.update_token_count(self.stage)
     
     def enter_stage11(self, goto_weapon_equipped : bool = False):
-        prev_stage : int = self.stage
+        prev_stage : int = self.stage if self.stage != 12 else 2
         self.stage = 11
         weapon_equipped_index : int = core_object.storage.ALL_WEAPONS.index(core_object.storage.weapon_equipped)
         current_weapon_index : int = weapon_equipped_index if goto_weapon_equipped else self.stage_data[11].get('weapon_index', weapon_equipped_index)
@@ -753,7 +753,7 @@ Useful for skilled players.''')],
         self.stage_data[12].clear()
     
     def enter_stage13(self, goto_armor_equipped : bool = False):
-        prev_stage : int = self.stage
+        prev_stage : int = self.stage if self.stage != 14 else 2
         self.stage = 13
         armor_equipped_index : int = core_object.storage.ALL_ARMORS.index(core_object.storage.armor_equipped) if core_object.storage.armor_equipped else 0
         current_armor_index : int = armor_equipped_index if goto_armor_equipped else self.stage_data[13].get('armor_index', armor_equipped_index)
