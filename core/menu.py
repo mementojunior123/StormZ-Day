@@ -243,6 +243,8 @@ class Menu(BaseMenu):
 
         #--> stage 2
         [BaseUiElements.new_text_sprite('Loadout', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
+        TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
         BaseUiElements.new_text_sprite('Weapon Equipped : Pistol', (Menu.font_50, 'Black', False), 0, 'midleft', (15, 100), name='weapon_equipped'),
         BaseUiElements.new_button('BlueButton', 'Modify', 1, 'midleft', (15, 145), (0.4, 1.0), 
         {'name' : 'modify_weapon'}, (Menu.font_40, 'Black', False)),
@@ -433,6 +435,7 @@ Useful for skilled players.''')],
         new_sprite2 : UiSprite = BaseUiElements.new_text_sprite(f'Armor Equipped : {armor_equipped}', (Menu.font_50, 'Black', False), 0, 
                                                                 'midleft', (15, 295), name='armor_equipped')
         self.find_and_replace(new_sprite2, 2, name='armor_equipped')
+        self.update_token_count(self.stage)
 
     def update_token_count(self, current_stage : int = 2):
         token_count : TextSprite = self.get_sprite_by_name(current_stage, 'token_count')

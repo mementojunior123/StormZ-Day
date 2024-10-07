@@ -18,7 +18,7 @@ WEAPON_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
     'Pistol' : {'Firerate' : 5, 'Damage' : 5},
     'Rifle' : {'Firerate' : 5, 'Damage' : 5},
     'Shotgun' : {'Firerate' : 5, 'Damage' : 5},
-    'Piercer' : {'Firerate' : 5, 'Damage' : 5, 'Ultra-Peirce' : 3}
+    'Piercer' : {'Firerate' : 5, 'Damage' : 5}
 }
 
 WEAPON_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
