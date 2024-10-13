@@ -128,6 +128,9 @@ class Player(Sprite):
         self.weapon : BaseWeapon
         self.armor : BaseArmor|None
 
+        self.equipped_weapon_perks : dict[str, int]|None = None
+        self.equipped_armor_perks : dict[str, int]|None = None
+
         self.current_direction : pygame.Vector2
         self.last_shot_direction : pygame.Vector2
 
@@ -171,8 +174,9 @@ class Player(Sprite):
         element.weapon.get_game_source()
 
         element.weapon.stats.reset()
-        firerate_level : int = core_object.storage.current_weapon_perks[core_object.storage.weapon_equipped].get('Firerate', 0)
-        damage_level : int = core_object.storage.current_weapon_perks[core_object.storage.weapon_equipped].get('Damage', 0)
+        element.equipped_weapon_perks = core_object.storage.current_weapon_perks[core_object.storage.weapon_equipped]
+        firerate_level : int = element.equipped_weapon_perks.get('Firerate', 0)
+        damage_level : int = element.equipped_weapon_perks.get('Damage', 0)
         element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.firerate_mult, 0.2 * firerate_level))
         element.weapon.stats.apply_perma_buff(WeaponBuff(WeaponBuffTypes.dmg_mult, 0.2 * damage_level))
         element.weapon.ready_shot_cooldown()
@@ -181,7 +185,10 @@ class Player(Sprite):
         if element.armor:
             element.armor.get_game_source()
             element.armor.stats.reset()
-            element.max_hp *= (1 + core_object.storage.current_armor_perks[core_object.storage.armor_equipped].get('Vitality', 0) * 0.2)
+            
+        if core_object.storage.armor_equipped:
+            element.equipped_armor_perks = core_object.storage.current_armor_perks[core_object.storage.armor_equipped]
+            element.max_hp *= (1 + element.equipped_armor_perks.get('Vitality', 0) * 0.2)
             element.hp = element.max_hp
 
         bar_image = make_upgrade_bar(150, 25, 1)
@@ -401,11 +408,25 @@ class Player(Sprite):
             shot_direction = (press_pos - self.position).normalize()
         
         shot_origin = self.position
-        if type(self.weapon) is BaseWeapon or type(self.weapon) is ShotgunWeapon or type(self.weapon) is PeirceWeapon:
-            result = self.weapon.shoot(shot_origin, shot_direction)
-            if result:
-                core_object.bg_manager.play_sfx(self.shot_sfx if self.weapon.stats.firerate >= 0.14 else self.fast_shot_sfx, 1)
+        self.use_weapon(shot_origin, shot_direction)
         self.last_shot_direction = shot_direction.copy()
+    
+    def use_weapon(self, shot_origin : pygame.Vector2, shot_direction : pygame.Vector2):
+        result : BaseProjectile|list[BaseProjectile]|None
+        match core_object.storage.weapon_equipped:
+            case 'Pistol':
+                result = self.weapon.shoot(shot_origin, shot_direction)
+            case 'Shotgun':
+                weapon : ShotgunWeapon = self.weapon
+                result = weapon.shoot(shot_origin, shot_direction, 1 if not self.equipped_weapon_perks.get('Tight Spread', 0) else 0.5)
+            case 'Rifle':
+                result = self.weapon.shoot(shot_origin, shot_direction)
+            case 'Piercer':
+                weapon : PeirceWeapon = self.weapon
+                result = weapon.shoot(shot_origin, shot_direction)
+            
+        if result:
+            core_object.bg_manager.play_sfx(self.shot_sfx if self.weapon.stats.firerate <= 7 else self.fast_shot_sfx, 1)
 
     def correct_aim(self, shot_direction : pygame.Vector2) -> pygame.Vector2:
         if not BaseZombie.active_elements: return shot_direction
@@ -525,6 +546,9 @@ class Player(Sprite):
         self.max_hp = None
         self.shot_cooldown = None
         self.weapon = None
+
+        self.equipped_weapon_perks = None
+        self.equipped_armor_perks = None
 
         self.main_heart = None
         self.ui_healthbar = None

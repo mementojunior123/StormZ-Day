@@ -4,38 +4,57 @@ import json
 from utils.helpers import to_roman
 if PLATFORM == 'emscripten':
     from platform import window
+'''
+To make a new weapon/armor perk, you have to update:
+-The perk formatting table
+-The perk tooltip table
+-The weapon/armor available perks
+-The weapon/armor perk cost table
 
+To make a new weapon/armor, you have to update:
+-The weapon/armor available perks
+-The weapon/armor perk cost table
+-The weapon/armor tooltip table
+-The base weapon/armor stats table
+'''
+COST_TABLE : dict[str, int|dict[str,dict[str, list[int]]]] = {
+    'Weapons' : {'Pistol' : 0, 'Rifle' : 50, 'Shotgun' : 50, 'Piercer' : 100},
+    'Armors' : {'Light' : 30, 'Balanced' : 50, 'Heavy' : 80, 'Adaptative' : 100},
+}
 ALL_WEAPONS : list[str] = ['Pistol', 'Rifle', 'Shotgun', 'Piercer']
+ALL_ARMORS : list[str] = ['Light', 'Balanced', 'Heavy', 'Adaptative']
 
-BASE_WEAPON_STATS : dict[str, dict[str, float|str]] = {
-    'Pistol' : {'Damage' : 5, 'Firerate' : 3},
-    'Rifle' : {'Damage' : 3, 'Firerate' : 5},
-    'Shotgun' : {'Damage' : '3x5', 'Firerate' : 2},
-    'Piercer' : {'Damage' : 7, 'Firerate' : 2.5}
+PERK_FORMATTING_TABLE : dict[str, str] = {
+    'Firerate' : 'Roman',
+    'Damage' : 'Roman',
+    'Sharpshooter' : 'Plus',
+    'Vitality' : 'Roman',
+    'Ultra-Peirce' : 'Plus',
+    'Tight Spread' : 'Plus'
+}
+PERK_TOOLTIP_TABLE : dict[str, str] = {
+    'Firerate' : 'Increases firerate by 20% per stack.',
+    'Damage' : 'Increases damage by 20% per stack.',
+    'Vitality' : 'Increases player health by 20% per stack.',
+    'Sharpshooter' : '???',
+    'Ultra-Peirce' : '???',
+    'Tight Spread' : 'Reduces natural spread on shotguns by 50%.'
 }
 
 WEAPON_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
     'Pistol' : {'Firerate' : 5, 'Damage' : 5},
     'Rifle' : {'Firerate' : 5, 'Damage' : 5},
-    'Shotgun' : {'Firerate' : 5, 'Damage' : 5},
+    'Shotgun' : {'Firerate' : 5, 'Damage' : 5, 'Tight Spread' : 1},
     'Piercer' : {'Firerate' : 5, 'Damage' : 5}
 }
 
 WEAPON_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
     'Pistol' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
     'Rifle' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
-    'Shotgun' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]},
+    'Shotgun' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50], 'Tight Spread' : [0, 25]},
     'Piercer' : {'Firerate' : [0, 5, 10, 20, 40, 50], 'Damage' : [0, 5, 10, 20, 40, 50]}
 }
 
-ALL_ARMORS : list[str] = ['Light', 'Balanced', 'Heavy', 'Adaptative']
-
-BASE_ARMOR_STATS : dict[str, dict[str, float|str]] = {
-    'Light' : {'Health' : 2, 'Resistance' : '60%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '2s'},
-    'Balanced' : {'Health' : 5, 'Resistance' : '75%', 'Regeneration Cooldown' : 3, 'Regeneration Time' : '4s'},
-    'Heavy' : {'Health' : 8, 'Resistance' : '90%', 'Regeneration Cooldown' : 5, 'Regeneration Time' : '6s'},
-    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '4s'},
-}
 
 ARMOR_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
     'Light' : {'Vitality' : 5},
@@ -50,30 +69,11 @@ ARMOR_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
     'Adaptative' : {'Vitality' : [0, 5, 10, 20, 40, 50]}
 }
 
-
-
-
-COST_TABLE : dict[str, int|dict[str,dict[str, list[int]]]] = {
-    'Weapons' : {'Pistol' : 0, 'Rifle' : 50, 'Shotgun' : 50, 'Piercer' : 100},
-    'Armors' : {'Light' : 30, 'Balanced' : 50, 'Heavy' : 80, 'Adaptative' : 100},
-}
-COST_TABLE['Weapon Perks'] = WEAPON_PERK_COST_TABLE
-COST_TABLE['Armor Perks'] = ARMOR_PERK_COST_TABLE
-
-PERK_FORMATTING_TABLE : dict[str, str] = {
-    'Firerate' : 'Roman',
-    'Damage' : 'Roman',
-    'Sharpshooter' : 'Plus',
-    'Vitality' : 'Roman',
-    'Ultra-Peirce' : 'Plus'
-}
-
-PERK_TOOLTIP_TABLE : dict[str, str] = {
-    'Firerate' : 'Increases firerate by 20% per stack.',
-    'Damage' : 'Increases damage by 20% per stack.',
-    'Vitality' : 'Increases player health by 20% per stack.',
-    'Sharpshooter' : '???',
-    'Ultra-Peirce' : '???'
+BASE_WEAPON_STATS : dict[str, dict[str, float|str]] = {
+    'Pistol' : {'Damage' : 5, 'Firerate' : 3},
+    'Rifle' : {'Damage' : 3, 'Firerate' : 5},
+    'Shotgun' : {'Damage' : '2x5', 'Firerate' : 1.9},
+    'Piercer' : {'Damage' : 7, 'Firerate' : 2.5}
 }
 
 WEAPON_TOOLTIP_TABLE : dict[str, str] = {
@@ -82,6 +82,14 @@ WEAPON_TOOLTIP_TABLE : dict[str, str] = {
     'Shotgun' : 'Shoots multiple pellets at once, dealing big damage.',
     'Piercer' : 'Bullets go trough enemies. Useful when enemies start to stack.'
 }
+
+BASE_ARMOR_STATS : dict[str, dict[str, float|str]] = {
+    'Light' : {'Health' : 2, 'Resistance' : '60%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '2s'},
+    'Balanced' : {'Health' : 5, 'Resistance' : '75%', 'Regeneration Cooldown' : 3, 'Regeneration Time' : '4s'},
+    'Heavy' : {'Health' : 8, 'Resistance' : '90%', 'Regeneration Cooldown' : 5, 'Regeneration Time' : '6s'},
+    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '4s'},
+}
+
 ARMOR_TOOLTIP_TABLE : dict[str, str] = {
     'Light' : 'Offers decent protection and keeps you moving fast.',
     'Balanced' : 'The best of both worlds.',
@@ -89,6 +97,11 @@ ARMOR_TOOLTIP_TABLE : dict[str, str] = {
     'Adaptative' : 'Completely negates all damage while active, but falls apart\nvery quickly if you get overwhelmed.\nUseful for skilled players.'
 
 }
+
+
+COST_TABLE['Weapon Perks'] = WEAPON_PERK_COST_TABLE
+COST_TABLE['Armor Perks'] = ARMOR_PERK_COST_TABLE
+
 class GameStorage:
 
     @staticmethod
@@ -103,8 +116,11 @@ class GameStorage:
     def format_perk_improvement(perk_name : str, current_perk_level : int, new_perk_level : int|None = None):
         if new_perk_level is None:
             new_perk_level = current_perk_level + 1
-        
-        return f'{GameStorage.format_perk(perk_name, current_perk_level)} --> {GameStorage.format_perk(perk_name, new_perk_level)}'
+        perk_format = PERK_FORMATTING_TABLE[perk_name]
+        if perk_format == 'Roman':
+            return f'{GameStorage.format_perk(perk_name, current_perk_level)} --> {to_roman(new_perk_level)}'
+        elif perk_format == 'Plus':
+            return f'{GameStorage.format_perk(perk_name, current_perk_level)} --> {'+' * (new_perk_level - 1)}'
         
 
     def __init__(self) -> None:

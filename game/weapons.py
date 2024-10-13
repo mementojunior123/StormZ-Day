@@ -18,7 +18,7 @@ class BaseWeapon:
         self.stats : WeaponStats = stats
         self.unique_name : str|None = name
         self.team : str = BaseProjectile.TEAMS.friendly
-        self.shot_cooldown : Timer = Timer(self.stats.firerate, time_source)
+        self.shot_cooldown : Timer = Timer(1 / self.stats.firerate, time_source)
     
     def copy(self) -> 'BaseWeapon':
         weapon = BaseWeapon(self.stats.copy_base(), self.shot_cooldown.time_source, self.unique_name)
@@ -29,7 +29,7 @@ class BaseWeapon:
         self.shot_cooldown.time_source = core_object.game.game_timer.get_time
     
     def reset_shot_cooldown(self):
-        self.shot_cooldown.set_duration(self.stats.firerate)
+        self.shot_cooldown.set_duration(1 / self.stats.firerate)
     
     def ready_shot_cooldown(self):
         self.shot_cooldown.set_duration(0)
@@ -46,9 +46,9 @@ class ShotgunWeapon(BaseWeapon):
         self.pellet_count : int = pellet_count
         self.bullet_spread : float = spread
     
-    def shoot(self, shot_origin : pygame.Vector2, shot_direction : pygame.Vector2) -> list[BaseProjectile]|None:
+    def shoot(self, shot_origin : pygame.Vector2, shot_direction : pygame.Vector2, spread_mult : float = 1) -> list[BaseProjectile]|None:
         if not self.shot_cooldown.isover(): return None
-        angles : list[float] = [pygame.math.lerp(-self.bullet_spread, self.bullet_spread, i / (self.pellet_count - 1)) for i in range(self.pellet_count)]
+        angles : list[float] = [pygame.math.lerp(-self.bullet_spread * spread_mult, self.bullet_spread * spread_mult, i / (self.pellet_count - 1)) for i in range(self.pellet_count)]
         boolets : list[BaseProjectile] = []
         for angle in angles:
             boolet = NormalProjectile.spawn(shot_origin, self.stats.projectile_speed, shot_direction.rotate(angle), self.team, self.stats.damage)
@@ -86,7 +86,7 @@ class WeaponStats:
 
     @property
     def firerate(self):
-        return (self.base_firerate / self.firerate_mult) - self.firerate_bonus
+        return (self.base_firerate * self.firerate_mult) + self.firerate_bonus
     @property
     def damage(self):
         return round((self.base_damage * self.damage_mult) + self.damage_bonus)
@@ -167,10 +167,11 @@ class WeaponBuffTypes:
 
 
 WEAPONS : dict[str, BaseWeapon] = {
-    'Pistol' : BaseWeapon(WeaponStats(5, 1/3, FiringModes.auto, 7)),
-    'Rifle' : BaseWeapon(WeaponStats(3, 0.2, FiringModes.auto, 7.6)),
-    'Shotgun' : ShotgunWeapon(WeaponStats(3, 0.5, FiringModes.auto, 7), 5, 20),
-    'Piercer' : PeirceWeapon(WeaponStats(7, 0.4, FiringModes.auto, 7), 3),
-    'debug' : PeirceWeapon(WeaponStats(20, 0.01, FiringModes.auto, 8), 99),
-    'enemy_weapon' : BaseWeapon(WeaponStats(1, 2, FiringModes.auto, 5))
+    'Pistol' : BaseWeapon(WeaponStats(5, 3, FiringModes.auto, 7)),
+    'Rifle' : BaseWeapon(WeaponStats(3, 5, FiringModes.auto, 7.6)),
+    'Shotgun' : ShotgunWeapon(WeaponStats(2, 1.9, FiringModes.auto, 7), 5, 20),
+    'Piercer' : PeirceWeapon(WeaponStats(7, 2.5, FiringModes.auto, 7), 3),
+
+    'debug' : PeirceWeapon(WeaponStats(20, 100, FiringModes.auto, 8), 99),
+    'enemy_weapon' : BaseWeapon(WeaponStats(1, 0.5, FiringModes.auto, 5))
 }

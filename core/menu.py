@@ -697,8 +697,8 @@ Useful for skilled players.''')],
                 header_text = core_object.storage.format_perk(perk, 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][1]}'
             elif current_level < max_level:
-                #header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
-                header_text = core_object.storage.format_perk(perk, current_level + 1)
+                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                #header_text = core_object.storage.format_perk(perk, current_level + 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Weapon Perks'][weapon_name][perk][current_level + 1]}'
             else:
                 header_text = core_object.storage.format_perk(perk, current_level)
@@ -717,7 +717,7 @@ Useful for skilled players.''')],
             curr_y += 165
             if curr_y > 400:
                 curr_y = 142
-                curr_x += 225
+                curr_x += 370
     
     def upgrade_stage12_weapon_perk(self, perk_name : str):
         current_weapon : str = self.stage_data[12]['weapon']
@@ -867,8 +867,8 @@ Useful for skilled players.''')],
                 header_text = core_object.storage.format_perk(perk, 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][1]}'
             elif current_level < max_level:
-                #header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
-                header_text = core_object.storage.format_perk(perk, current_level + 1)
+                header_text = core_object.storage.format_perk_improvement(perk, current_level, current_level + 1)
+                #header_text = core_object.storage.format_perk(perk, current_level + 1)
                 cost_text = f'Cost : {core_object.storage.COST_TABLE['Armor Perks'][armor_name][perk][current_level + 1]}'
             else:
                 header_text = core_object.storage.format_perk(perk, current_level)
@@ -887,7 +887,7 @@ Useful for skilled players.''')],
             curr_y += 165
             if curr_y > 500:
                 curr_y = 150
-                curr_x += 225
+                curr_x += 285
     
     def upgrade_stage14_armor_perk(self, perk_name : str):
         current_armor : str = self.stage_data[14]['armor']
