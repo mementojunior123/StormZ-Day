@@ -17,19 +17,21 @@ from game.armor import ArmorBuff, ArmorBuffTypes, ArmorStats, ARMORS
 from game.armor import BaseArmor
 
 class PlayerJoystick:
-    def __init__(self, position : pygame.Vector2, amplitude : float = 50) -> None:
+    def __init__(self, position : pygame.Vector2, amplitude : float = 50, deadzone : float = 0.2) -> None:
         self.start_pos : pygame.Vector2 = position.copy()
         self.pos : pygame.Vector2 = position.copy()
+        self.deadzone : float = deadzone
 
         self.grab_id : int|None = None
         self.grab_offset : pygame.Vector2|None = None
         self.is_grabbed : bool = False
 
         self.amplitude : float = amplitude
-        circle1 = make_circle(self.amplitude * 0.5, (150, 150, 150))
+        circle1 = make_circle(self.amplitude * 0.5, (150, 150, 150)).convert_alpha()
         circle2 = make_circle(self.amplitude, (90, 90, 90))
         circle2 = circle2.convert_alpha()
         circle2.set_alpha(180)
+        circle1.set_alpha(225)
         self.visual_component : UiSprite = UiSprite(circle1, circle1.get_rect(center = self.pos), 0, 'joystick', zindex=2)
         self.background : UiSprite = UiSprite(circle2, circle2.get_rect(center = self.start_pos), 0, 'joy_background', zindex=1)
         core_object.main_ui.add(self.visual_component)
@@ -71,7 +73,7 @@ class PlayerJoystick:
         if offset.magnitude() <= 0: return pygame.Vector2(0,0)
         distance : float = offset.magnitude()
         direction : pygame.Vector2 = offset.normalize()
-        speed : float = 1 if distance > self.amplitude * 0.2 else 0
+        speed : float = 1 if distance > self.amplitude * self.deadzone else 0
         return direction * speed
     
     def can_grab(self, grab_pos : pygame.Vector2) -> bool:
@@ -134,7 +136,8 @@ class Player(Sprite):
         self.current_direction : pygame.Vector2
         self.last_shot_direction : pygame.Vector2
 
-        self.joystick : PlayerJoystick|None
+        self.movement_joystick : PlayerJoystick|None
+        self.aim_joystick : PlayerJoystick|None
         self.finger_id_stack : list[int]|None
         self.arrow_map : dict[int, Timer|bool]|None
 
@@ -153,11 +156,13 @@ class Player(Sprite):
         element.last_shot_direction = pygame.Vector2(1,0)
         element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
-            amplitude = 90
-            element.joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
+            amplitude = 75
+            element.movement_joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
+            element.aim_joystick = PlayerJoystick(pygame.Vector2(950 - amplitude, 530 - amplitude), amplitude=amplitude)
             element.finger_id_stack = []
         else:
-            element.joystick = None
+            element.movement_joystick = None
+            element.aim_joystick = None
             element.finger_id_stack = None
         element.arrow_map = {pygame.K_UP : False, pygame.K_DOWN : False, pygame.K_LEFT : False, pygame.K_RIGHT : False}
 
@@ -208,7 +213,8 @@ class Player(Sprite):
         return element
     
     def update(self, delta: float):
-        if self.joystick: self.joystick.update()
+        if self.movement_joystick: self.movement_joystick.update()
+        if self.aim_joystick: self.aim_joystick.update()
         if not core_object.game.is_nm_state(): return
         self.current_direction = self.get_movement_vector()
         self.input_action()
@@ -260,7 +266,7 @@ class Player(Sprite):
                 move_vector += pygame.Vector2(0, -1)
             if move_vector.magnitude() != 0: move_vector.normalize_ip()
         else:
-            move_vector = self.joystick.get_vector()
+            move_vector = self.movement_joystick.get_vector()
         return move_vector
     
     def get_mouse_vector(self) -> pygame.Vector2:
@@ -324,7 +330,11 @@ class Player(Sprite):
         control_scheme : str = core_object.settings.info['ControlMethod']
         if control_scheme == 'Mobile':
             if self.finger_id_stack and core_object.active_fingers:
-                self.shoot('Touch', pygame.Vector2(core_object.active_fingers[self.finger_id_stack[-1]]))
+                active_fingers : list[int] = list(core_object.active_fingers.keys())
+                if (len(active_fingers) >= 2) or (active_fingers[0] != self.movement_joystick.grab_id):
+                    self.shoot('Touch', pygame.Vector2(core_object.active_fingers[self.finger_id_stack[-1]]))
+            elif self.aim_joystick.get_vector():
+                self.shoot('Touch', list(core_object.active_fingers.values())[-1])
             return
         elif control_scheme != 'Expert':
             arrow_dir = self.get_arrow_map_direction()
@@ -397,15 +407,12 @@ class Player(Sprite):
             else:
                 if arrow_direction.magnitude() != 0:
                     shot_direction = self.correct_aim(arrow_direction)
-                elif not BaseZombie.active_elements:
+                else:
                     shot_direction = self.correct_aim(key_direction) 
-                else: 
-                    sorted_enemies = sorted(BaseZombie.active_elements, key=lambda element : (element.position - self.position).magnitude_squared())
-                    closest_enemy : BaseZombie = sorted_enemies[0]
-                    shot_direction = (closest_enemy.position - self.position).normalize()
+
 
         elif control_scheme == 'Mobile':
-            shot_direction = (press_pos - self.position).normalize()
+            shot_direction = self.aim_joystick.get_vector() or (press_pos - self.position).normalize()
         
         shot_origin = self.position
         self.use_weapon(shot_origin, shot_direction)
@@ -495,26 +502,37 @@ class Player(Sprite):
             if finger_id not in self.finger_id_stack: self.finger_id_stack.append(finger_id)
 
             did_grab : bool = False
-            if self.joystick:
-                self.joystick.update()
-                if not self.joystick.is_grabbed and self.joystick.can_grab(press_pos):
-                    self.joystick.grab(finger_id, press_pos, True)
+            if self.movement_joystick:
+                self.movement_joystick.update()
+                if not self.movement_joystick.is_grabbed and self.movement_joystick.can_grab(press_pos):
+                    self.movement_joystick.grab(finger_id, press_pos, True)
                     did_grab = True
                     self.finger_id_stack.remove(finger_id)
+            
+            if self.aim_joystick:
+                self.aim_joystick.update()
+                if not self.aim_joystick.is_grabbed and self.aim_joystick.can_grab(press_pos):
+                    self.aim_joystick.grab(finger_id, press_pos, True)
+                    did_grab = True
+                    self.finger_id_stack.remove(finger_id)
+
             if not did_grab:
                 if core_object.game.is_nm_state():
-                    self.shoot("Touch", press_pos)
+                    pass
+                    #self.shoot("Touch", press_pos)
             
 
 
         elif event.type == pygame.FINGERUP:
             finger_id : int = event.finger_id
             if finger_id in self.finger_id_stack: self.finger_id_stack.remove(finger_id)
-            #print(self.finger_id_stack, core_object.active_fingers, self.joystick.pos)
-            if not self.joystick: return
-            if not self.joystick.is_grabbed: return
-            if finger_id == self.joystick.grab_id:
-                self.joystick.stop_grab()
+            #print(self.finger_id_stack, core_object.active_fingers, self.movement_joystick.pos)
+            if self.movement_joystick:
+                if finger_id == self.movement_joystick.grab_id:
+                    self.movement_joystick.stop_grab()
+            if self.aim_joystick:
+                if finger_id == self.aim_joystick.grab_id:
+                    self.aim_joystick.stop_grab()
             
 
     @classmethod
@@ -538,7 +556,8 @@ class Player(Sprite):
         self.current_direction = None
         self.current_aim_arrow_orientation = None
         self.last_shot_direction = None
-        self.joystick = None
+        self.movement_joystick = None
+        self.aim_joystick = None
         self.finger_id_stack = None
         self.arrow_map = None
         
