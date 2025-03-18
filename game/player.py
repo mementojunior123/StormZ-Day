@@ -425,7 +425,7 @@ class Player(Sprite):
                 result = self.weapon.shoot(shot_origin, shot_direction)
             case 'Shotgun':
                 weapon : ShotgunWeapon = self.weapon
-                result = weapon.shoot(shot_origin, shot_direction, 1 if not self.equipped_weapon_perks.get('Tight Spread', 0) else 0.5)
+                result = weapon.shoot(shot_origin, shot_direction, 1 if not self.equipped_weapon_perks.get('Tight Spread', 0) else 0.85)
             case 'Rifle':
                 result = self.weapon.shoot(shot_origin, shot_direction)
             case 'Piercer':

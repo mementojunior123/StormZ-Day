@@ -47,10 +47,10 @@ class BaseArmor:
         
 
 class ArmorStats:
-    def __init__(self, resistance : float, max_hp : int, regen_speed : float, regen_cooldown : float) -> None:
+    def __init__(self, resistance : float, max_hp : int, regen_time : float, regen_cooldown : float) -> None:
         self.base_resistance : float = resistance
         self.base_max_health : int = max_hp
-        self.base_regen_speed : float = (max_hp / regen_speed)
+        self.base_regen_speed : float = (max_hp / regen_time)
         self.base_regen_cooldown : float = regen_cooldown
 
         self.resistance_mult : float = 1
@@ -254,9 +254,9 @@ class RegenCooldownMult(ArmorBuff):
 
 ARMORS : dict[str, BaseArmor] = {
     None : None,
-    'Light' : BaseArmor(ArmorStats(0.6, 2, 2, 2), speed_penalty=(7/7)),
-    'Balanced' : BaseArmor(ArmorStats(0.75, 5, 4, 3), speed_penalty=(6/7)),
-    'Heavy' : BaseArmor(ArmorStats(0.9, 8, 6, 5), speed_penalty=(5/7), does_healthgate=True),
-    'Adaptative' : BaseArmor(ArmorStats(1, 2, 4, 2), speed_penalty=(7/7), does_healthgate=True)
+    'Light' : BaseArmor(ArmorStats(0.5, 2, 2, 2), speed_penalty=(7/7)),
+    'Balanced' : BaseArmor(ArmorStats(0.65, 5, 3, 4), speed_penalty=(6/7)),
+    'Heavy' : BaseArmor(ArmorStats(0.80, 8, 7, 6), speed_penalty=(5/7), does_healthgate=True),
+    'Adaptative' : BaseArmor(ArmorStats(1.00, 2, 4, 4), speed_penalty=(7/7), does_healthgate=True)
 
 }

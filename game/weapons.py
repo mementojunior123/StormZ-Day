@@ -168,9 +168,9 @@ class WeaponBuffTypes:
 
 WEAPONS : dict[str, BaseWeapon] = {
     'Pistol' : BaseWeapon(WeaponStats(5, 3, FiringModes.auto, 7)),
-    'Rifle' : BaseWeapon(WeaponStats(3, 5, FiringModes.auto, 7.6)),
-    'Shotgun' : ShotgunWeapon(WeaponStats(2, 1.9, FiringModes.auto, 7), 5, 20),
-    'Piercer' : PeirceWeapon(WeaponStats(7, 2.5, FiringModes.auto, 7), 3),
+    'Rifle' : BaseWeapon(WeaponStats(3, 5.5, FiringModes.auto, 7.6)),
+    'Shotgun' : ShotgunWeapon(WeaponStats(2, 1.75, FiringModes.auto, 7), 5, 20),
+    'Piercer' : PeirceWeapon(WeaponStats(8, 2.4, FiringModes.auto, 7.6), 3),
 
     'debug' : PeirceWeapon(WeaponStats(20, 100, FiringModes.auto, 8), 99),
     'enemy_weapon' : BaseWeapon(WeaponStats(1, 0.5, FiringModes.auto, 5))

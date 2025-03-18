@@ -38,7 +38,7 @@ PERK_TOOLTIP_TABLE : dict[str, str] = {
     'Vitality' : 'Increases player health by 20% per stack.',
     'Sharpshooter' : '???',
     'Ultra-Peirce' : '???',
-    'Tight Spread' : 'Reduces natural spread on shotguns by 50%.'
+    'Tight Spread' : 'Reduces natural spread on shotguns by 15% per stack.'
 }
 
 WEAPON_AVAILABLE_PERKS : dict[str, dict[str, int]] = {
@@ -71,9 +71,9 @@ ARMOR_PERK_COST_TABLE : dict[str, dict[str, list[int]]] = {
 
 BASE_WEAPON_STATS : dict[str, dict[str, float|str]] = {
     'Pistol' : {'Damage' : 5, 'Firerate' : 3},
-    'Rifle' : {'Damage' : 3, 'Firerate' : 5},
-    'Shotgun' : {'Damage' : '2x5', 'Firerate' : 1.9},
-    'Piercer' : {'Damage' : 7, 'Firerate' : 2.5}
+    'Rifle' : {'Damage' : 3, 'Firerate' : 5.5},
+    'Shotgun' : {'Damage' : '2x5', 'Firerate' : 1.75},
+    'Piercer' : {'Damage' : 8, 'Firerate' : 2.4}
 }
 
 WEAPON_TOOLTIP_TABLE : dict[str, str] = {
@@ -84,10 +84,10 @@ WEAPON_TOOLTIP_TABLE : dict[str, str] = {
 }
 
 BASE_ARMOR_STATS : dict[str, dict[str, float|str]] = {
-    'Light' : {'Health' : 2, 'Resistance' : '60%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '2s'},
-    'Balanced' : {'Health' : 5, 'Resistance' : '75%', 'Regeneration Cooldown' : 3, 'Regeneration Time' : '4s'},
-    'Heavy' : {'Health' : 8, 'Resistance' : '90%', 'Regeneration Cooldown' : 5, 'Regeneration Time' : '6s'},
-    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : 2, 'Regeneration Time' : '4s'},
+    'Light' : {'Health' : 2, 'Resistance' : '50%', 'Regeneration Cooldown' : '2s', 'Regeneration Time' : '2s'},
+    'Balanced' : {'Health' : 5, 'Resistance' : '65%', 'Regeneration Cooldown' : '3s', 'Regeneration Time' : '4s'},
+    'Heavy' : {'Health' : 8, 'Resistance' : '80%', 'Regeneration Cooldown' : '6s', 'Regeneration Time' : '7s'},
+    'Adaptative' : {'Health' : 2, 'Resistance' : '100%', 'Regeneration Cooldown' : '4s', 'Regeneration Time' : '4s'},
 }
 
 ARMOR_TOOLTIP_TABLE : dict[str, str] = {
