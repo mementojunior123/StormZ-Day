@@ -157,9 +157,11 @@ class Player(Sprite):
         element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
             amplitudes = {'Small' : 30, 'Medium' : 50, 'Large' : 80}
+            diffs = {'Small' : 15, 'Medium' : 20, 'Large' : -5}
+            diff = diffs[core_object.settings.info['JoystickSize']]
             amplitude = amplitudes[core_object.settings.info['JoystickSize']]
-            element.movement_joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
-            element.aim_joystick = PlayerJoystick(pygame.Vector2(950 - amplitude, 530 - amplitude), amplitude=amplitude)
+            element.movement_joystick = PlayerJoystick(pygame.Vector2(80 - diff, 460 + diff), amplitude=amplitude)
+            element.aim_joystick = PlayerJoystick(pygame.Vector2(880 + diff, 460 + diff), amplitude=amplitude)
             element.finger_id_stack = []
         else:
             element.movement_joystick = None
@@ -413,7 +415,7 @@ class Player(Sprite):
 
 
         elif control_scheme == 'Mobile':
-            shot_direction = self.aim_joystick.get_vector() or (press_pos - self.position).normalize()
+            shot_direction = self.correct_aim(self.aim_joystick.get_vector() or (press_pos - self.position).normalize(), 7.5)
         
         shot_origin = self.position
         self.use_weapon(shot_origin, shot_direction)
@@ -436,7 +438,7 @@ class Player(Sprite):
         if result:
             core_object.bg_manager.play_sfx(self.shot_sfx if self.weapon.stats.firerate <= 7 else self.fast_shot_sfx, 1)
 
-    def correct_aim(self, shot_direction : pygame.Vector2) -> pygame.Vector2:
+    def correct_aim(self, shot_direction : pygame.Vector2, max_aim_correction : float = 17.5) -> pygame.Vector2:
         if not BaseZombie.active_elements: return shot_direction
         closest_angle : float = 9999
         closest_enemy : BaseZombie|None = None
@@ -454,7 +456,7 @@ class Player(Sprite):
                 closest_enemy_direction = player_to_zomb_vec
         
         if not enemy: return shot_direction
-        if closest_angle <= 0.8 or closest_angle >= 17.5: return shot_direction
+        if closest_angle <= 0.8 or closest_angle >= max_aim_correction: return shot_direction
         return closest_enemy_direction
 
 
