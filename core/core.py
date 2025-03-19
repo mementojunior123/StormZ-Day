@@ -76,8 +76,6 @@ class Core:
             platform.EventTarget.addEventListener(platform.window, "focus", self.continue_things)
     
     def load_game(self):
-        self.settings.set_defualt({'Brightness' : 0, "ControlMethod" : None})
-
         self.load_settings()
         self.load_storage()
     
