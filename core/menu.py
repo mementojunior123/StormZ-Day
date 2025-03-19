@@ -320,6 +320,9 @@ Useful for skilled players.''')],
         {'name' : 'choose_reset_button'}, (Menu.font_40, 'Black', False)),
         BaseUiElements.new_button('BlueButton', 'Back', 1, 'bottomleft', (15, window_size[1] - 15), (0.4, 1.0), 
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
+        BaseUiElements.new_text_sprite('Current joystick size : Medium', (Menu.font_50, 'Black', False), 0, 'topleft', (15, 240), name='joy_size'),
+        BaseUiElements.new_button('BlueButton', 'Edit', 1, 'topleft', (15, 290), (0.4, 1.0), 
+        {'name' : 'choose_joystick_size'}, (Menu.font_40, 'Black', False)),
         ],
         #--> stage 7
         [
@@ -411,6 +414,14 @@ Useful for skilled players.''')],
         {'name' : 'back_button'}, (Menu.font_40, 'Black', False)),
         UiSprite(Menu.token_image, Menu.token_image.get_rect(topright = (955, 15)), 0, 'token_image'),
         TextSprite(pygame.Vector2(903, 40), 'midright', 0, '3', 'token_count', None, None, 0, (Menu.font_50, 'White', False), ('Black', 2), colorkey=[0,255,0]),
+        ],
+        #--> stage 15
+        [
+        BaseUiElements.new_text_sprite('Choose joystick size', (Menu.font_60, 'Black', False), 0, 'midtop', (centerx, 25)),
+        *self.make_control_scheme_ui('Small', (100, 200), 'Enables the small joysticks.'),
+        *self.make_control_scheme_ui('Medium', (467, 200), 'Enables the medium joysticks.'),
+        *self.make_control_scheme_ui('Large', (835, 200), 'Enables the large joysticks.'), 
+        #*self.make_control_scheme_ui('Expert', (835, 200), 'Aim with the mouse.\nRecommended for more experienced players.')
         ],
         ]
     
@@ -554,6 +565,9 @@ Useful for skilled players.''')],
         text_sprite = BaseUiElements.new_text_sprite(f'Current control scheme : {core_object.settings.info['ControlMethod']}', 
                                                      (Menu.font_50, 'Black', False), 0, 'topleft', (15, 90), name='scheme_title')
         self.find_and_replace(text_sprite, 6, name='scheme_title')
+        text_sprite2 = BaseUiElements.new_text_sprite(f'Current joystick size : {core_object.settings.info['JoystickSize']}', 
+                                                     (Menu.font_50, 'Black', False), 0, 'topleft', (15, 240), name='joy_size')
+        self.find_and_replace(text_sprite2, 6, name='joy_size')
     
     def enter_stage7(self):
         self.stage_data[7]['prev_stage'] = self.stage
@@ -924,6 +938,17 @@ Useful for skilled players.''')],
     def exit_stage14(self):
         self.remove_stage14_upgrade_ui()
         self.stage_data[14].clear()
+    
+    def enter_stage15(self):
+        self.stage_data[15]['prev_stage'] = self.stage
+        self.stage = 15
+    
+    def exit_stage15(self):
+        old_stage : int = self.stage_data[15].get('prev_stage', None)
+        if not old_stage: old_stage = 1
+        if old_stage == 15: old_stage = 1
+        self.stage_data[15].clear()
+        self.enter_any_stage(old_stage)
 
     def goto_stage(self, new_stage : int):
         self.exit_any_stage()
@@ -1042,6 +1067,8 @@ Useful for skilled players.''')],
             case 6:
                 if name == 'choose_scheme_button':
                     self.enter_stage7()
+                elif name == "choose_joystick_size":
+                    self.enter_stage15()
                 elif name == 'back_button':
                     self.enter_stage1()
                 elif name == 'choose_reset_button':
@@ -1189,3 +1216,10 @@ Useful for skilled players.''')],
                     self.goto_stage(13)
                 elif name[:13] == 'upgrade_perk_':
                     self.upgrade_stage14_armor_perk(name[13:])
+            
+            case 15:
+                if name[:7] == 'button_':
+                    option_name = name[7:]
+                    core_object.settings.info['JoystickSize'] = option_name
+                    core_object.save_settings()
+                    self.exit_stage15()

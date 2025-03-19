@@ -3,14 +3,14 @@ from sys import platform as PLATFORM
 from typing import Any
 if PLATFORM == 'emscripten':
     from platform import window
-class SettingException(BaseException):
+class SettingException(Exception):
     pass
 
 
 class Settings:
     def __init__(self) -> None:
         self.info = {}
-        self.default = {'Brightness' : 0, "ControlMethod" : None}
+        self.default = {'Brightness' : 0, "ControlMethod" : None, "JoystickSize" : "Medium"}
     
     def set_defualt(self, new_default : dict):
         self.default = new_default

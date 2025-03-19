@@ -156,7 +156,8 @@ class Player(Sprite):
         element.last_shot_direction = pygame.Vector2(1,0)
         element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
-            amplitude = 75
+            amplitudes = {'Small' : 30, 'Medium' : 50, 'Large' : 80}
+            amplitude = amplitudes[core_object.settings.info['JoystickSize']]
             element.movement_joystick = PlayerJoystick(pygame.Vector2(10 + amplitude, 530 - amplitude), amplitude=amplitude)
             element.aim_joystick = PlayerJoystick(pygame.Vector2(950 - amplitude, 530 - amplitude), amplitude=amplitude)
             element.finger_id_stack = []

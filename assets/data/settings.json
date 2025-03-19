@@ -1,4 +1,5 @@
 {
     "Brightness" : 0, 
-    "ControlMethod" : null
+    "ControlMethod" : "Mobile", 
+    "JoystickSize" : "Large"
 }
