@@ -156,8 +156,8 @@ class Player(Sprite):
         element.last_shot_direction = pygame.Vector2(1,0)
         element.last_arrow_press_timer = Timer(0, time_source=core_object.game.game_timer.get_time)
         if core_object.settings.info['ControlMethod'] == "Mobile":
-            amplitudes = {'Small' : 30, 'Medium' : 50, 'Large' : 80}
-            diffs = {'Small' : 15, 'Medium' : 20, 'Large' : -5}
+            amplitudes = {'Small' : 40, 'Medium' : 70, 'Large' : 90}
+            diffs = {'Small' : 0, 'Medium' : -8, 'Large' : -18}
             diff = diffs[core_object.settings.info['JoystickSize']]
             amplitude = amplitudes[core_object.settings.info['JoystickSize']]
             element.movement_joystick = PlayerJoystick(pygame.Vector2(80 - diff, 460 + diff), amplitude=amplitude)
@@ -415,7 +415,7 @@ class Player(Sprite):
 
 
         elif control_scheme == 'Mobile':
-            shot_direction = self.correct_aim(self.aim_joystick.get_vector() or (press_pos - self.position).normalize(), 7.5)
+            shot_direction = self.correct_aim(self.aim_joystick.get_vector() or (press_pos - self.position).normalize(), 14)
         
         shot_origin = self.position
         self.use_weapon(shot_origin, shot_direction)
